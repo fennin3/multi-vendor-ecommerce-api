@@ -33,5 +33,5 @@ class SubCategoryFilter(filters.FilterSet):
 
     class Meta:
         model = SubCategory
-        fields = ()
+        fields = ("category",)
 
