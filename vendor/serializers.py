@@ -103,7 +103,8 @@ class VendorSerializer(serializers.ModelSerializer):
         new_user = {'first_name':user.first_name, 'email':user.email, 'confirmation_code':user.confirmation_code}
         
         cc = ConfirmationCode.objects.create(code=gen_confirmation_code(), user=user)
-        send_confirmation_mail.delay('Confirm Your Account', new_user, cc.code)
+        # send_confirmation_mail.delay('Confirm Your Account', new_user, cc.code)
+        send_confirmation_mail('Confirm Your Account', new_user, cc.code)
         print("Email Sent")
         vendor = Vendor.objects.create(user=user, **validated_data)
         return vendor

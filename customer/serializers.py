@@ -37,7 +37,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         user.active = False
         user.save()
         cc = ConfirmationCode.objects(code=gen_confirmation_code(), user=user)
-        send_confirmation_mail().delay('Confirm Your Account', user, cc.code)
+        # send_confirmation_mail().delay('Confirm Your Account', user, cc.code)
+        send_confirmation_mail('Confirm Your Account', user, cc.code)
         customer = Customer.objects.create(user=user, **validated_data)
         return customer
 

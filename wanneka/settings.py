@@ -1,4 +1,3 @@
-import environ
 import os
 
 from datetime import timedelta
@@ -81,11 +80,15 @@ INSTALLED_APPS = [
     "administrator",
     "order",
     "product",
-    "transactions"
+    "transactions",
+
+    # External Libraries
+    "storages",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -158,6 +161,17 @@ EMAIL_HOST="smtp.gmail.com"
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 
+
+AWS_ACCESS_KEY_ID = "AKIA4BFIURCSEMNYSIUP"  
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_STORAGE_BUCKET_NAME = "wanneka"
+AWS_S3_FILE_OVERWRITE = False  
+AWS_DEFAULT_ACL = None  
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' 
+AWS_S3_REGION_NAME = "us-east-2"
+AWS_S3_ADDRESSING_STYLE = "virtual"
+
+
  
 
 LANGUAGE_CODE = 'en-us'
@@ -171,10 +185,18 @@ USE_L10N = True
 USE_TZ = True
 
 
-
+STATIC_ROOT  =   os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/') 
 
 
 
@@ -194,3 +216,6 @@ CORS_ORIGIN_REGEX_WHITELIST = [
 
 CORS_ALLOWED_ORIGINS = ["https://*", "http://*"]
 
+import dj_database_url 
+prod_db  =  dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(prod_db)
