@@ -1,6 +1,9 @@
-from rest_framework import serializers, generics, status
+from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import update_last_login
+from vendor.exceptions import CustomException
 
 from vendor.models import CustomUser
 from vendor.serializers import UserSerializer
