@@ -1,0 +1,167 @@
+from django.shortcuts import render, get_object_or_404, get_list_or_404
+
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from vendor.models import Vendor
+from vendor.permissions import IsVendor
+
+from .models import Image, Product, Category, Image, ProductVariation, Size
+from .serializers import ImageSerializer, ProductSerializer, CategorySerializer, ProductSerializer2, VariantSerializer
+
+
+
+class CategoryView(generics.ListCreateAPIView):
+    permission_classes = ()
+    queryset = Category.objects.all().order_by('name')
+    serializer_class = CategorySerializer
+    
+
+
+class CreateListProduct(generics.ListCreateAPIView):
+    permission_classes = (IsVendor,)
+    queryset = Product.objects.all().order_by('name')
+    serializer_class = ProductSerializer2
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        categories =[]
+        sizes =[]
+        colors =[]
+
+        if serializer.data['categories']:
+            categories = str(serializer.data['categories'][0]).replace('[','').replace(']','').split(',')
+        if serializer.data['sizes']:
+            sizes = str(serializer.data['sizes'][0]).replace('[','').replace(']','').split(',')
+        if serializer.data['colors']:
+            colors = str(serializer.data['colors'][0]).replace('[','').replace(']','').split(',')
+        # colors = request.data.get
+
+        vendor = get_object_or_404(Vendor, user=request.user)
+
+        product = Product.objects.create(
+            vendor=vendor,
+            name=serializer.data['name'],
+            price=serializer.data['price'],
+            stock=serializer.data['stock'],
+            discount_type=serializer.data['discount_type'],
+            discount=serializer.data['discount'],
+            thumbnail=request.data['thumbnail'],
+            description=serializer.data['description']
+        )
+
+        categories = Category.objects.filter(uid__in=[category.strip() for category in categories])
+        sizes = Size.objects.filter(id__in=sizes)
+        colors = Size.objects.filter(id__in=colors)
+
+        product.categories.set(categories)
+        product.sizes.set([size.id for size in sizes])
+        product.colors.set([color.id for color in colors])
+        
+        images_objs = []
+        for image in request.data.getlist('images'):
+            images_objs.append(Image(product=product, image=image))
+
+        images = Image.objects.bulk_create(images_objs)
+        product.save()
+        
+        return Response(
+            {"message": "Product successfully created!"}, status=status.HTTP_201_CREATED
+        )
+
+
+    def get(self, request, vendor_id=None):
+
+        if vendor_id:
+            products = Product.objects.select_related('vendor').filter(vendor__user__uid=vendor_id)
+        else:
+            products = Product.objects.all()
+
+        page = self.paginate_queryset(products)
+        if page is not None:
+            serializer = ProductSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+class UpdateRetrieveDetroyProduct(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsVendor,)
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "uid"
+
+class UpdateProductStatus(APIView):
+    permission_classes = (IsVendor,)
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def patch(self,request, uid):
+        product = self.queryset.get(uid=uid)
+        value = product.is_active
+        product.is_active = not value
+        product.save()
+        value = "Active" if product.is_active else "Inactive"
+        return Response(
+            {
+                "message":f"Product is now {value}"
+            },status=status.HTTP_200_OK
+        )
+
+class DeleteProductImage(generics.DestroyAPIView):
+    permission_classes = (IsVendor,)
+    queryset =  Image.objects.all()
+    serializer_class = ImageSerializer
+    lookup_field = 'uid'
+
+class ImageUploadView(generics.CreateAPIView):
+    permission_classes = (IsVendor,)
+    queryset =  Image.objects.all()
+    serializer_class = ImageSerializer
+
+    def post(self, request, uid):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        product = get_object_or_404(Product, uid=uid)
+    
+        if request.user == product.vendor.user:
+            serializer.save(product=product)
+            return Response(
+                {"message": f"{product.name}'s image successfully added!"}, status=status.HTTP_201_CREATED
+            )
+        
+        return Response(
+            {"message": "You don't have necessary permission(s) for this action"},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+
+class AddProductVariant(generics.CreateAPIView):
+    permission_classes =(IsVendor,)
+    queryset = ProductVariation.objects.all()
+    serializer_class = VariantSerializer
+
+class UpdateRetrieveDestroyProductVariant(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes =(IsVendor,)
+    queryset = ProductVariation.objects.all()
+    serializer_class = VariantSerializer
+    lookup_field = "uid"
+
+class VariantStatus(APIView):
+    permission_classes =(IsVendor,)
+    queryset = ProductVariation.objects.all()
+    serializer_class = VariantSerializer
+
+    def patch(self, request,uid):
+        item = self.queryset.get(uid=uid)
+        value = item.is_active
+        item.is_active = not value
+        item.save()
+        val = "Active" if item.is_active else "Inactive"
+        return Response({
+            "message":f"Item is now {val}"
+        },status=status.HTTP_200_OK)
+
+
