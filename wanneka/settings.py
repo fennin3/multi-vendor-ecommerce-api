@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "$nerdthejohn-=fz_7q70^d+dhu9pp_^tufaqw!#6y_67ht@2tnr)yru!ksid&@"
         
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -168,7 +168,7 @@ AWS_STORAGE_BUCKET_NAME = "wanneka"
 AWS_S3_FILE_OVERWRITE = False  
 AWS_DEFAULT_ACL = None  
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' 
-AWS_S3_REGION_NAME = "us-east-2"
+AWS_S3_REGION_NAME = "us-west-2"
 AWS_S3_ADDRESSING_STYLE = "virtual"
 
 

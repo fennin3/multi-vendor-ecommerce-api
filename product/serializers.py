@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from vendor.models import Vendor
-from vendor.serializers import VendorSerializer
+from vendor.serializers import UserSerializer, VendorSerializer
 
-from .models import Color, Product, Image, Category, ProductVariation, Size
+from .models import Color, Product, Image, Category, ProductVariation, Review, Size
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -59,6 +59,12 @@ class VariantSerializer(serializers.ModelSerializer):
         model=ProductVariation
         fields = "__all__"
 
+class ReviewSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model=Review
+        fields="__all__"
+
 class ProductSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
@@ -67,10 +73,11 @@ class ProductSerializer(serializers.ModelSerializer):
     colors = ColorSerializer(read_only=True, many=True)
     sizes = SizeSerializer(read_only=True, many=True)
     variants = VariantSerializer(read_only=True, many=True)
+    reviews = ReviewSerializer(read_only=True, many=True)
     
     class Meta:
         model = Product
-        fields = ("uid", "slug","name", "categories", "price", "stock","description","images", "discount_type","discount", "thumbnail","sizes", "colors", "variants", "is_active", "is_approved")
+        fields = ("uid", "slug","name", "categories", "price", "stock","description","images", "discount_type","discount", "thumbnail","sizes", "colors", "variants", "is_active", "is_approved", "reviews")
 
 
 class ProductSerializer3(serializers.ModelSerializer):

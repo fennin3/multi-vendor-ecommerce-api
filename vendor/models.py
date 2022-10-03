@@ -1,3 +1,4 @@
+from email.policy import default
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -51,6 +52,7 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(_("first name"), max_length=150, blank=False)
     last_name = models.CharField(_("last name"), max_length=150, blank=False)
     user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=15)
+    avatar = models.ImageField(upload_to="media/User-Avatar/", default="profile.png")
     is_confirmed = models.BooleanField(_("is confirmed"), default=False)
     confirmation_code = models.IntegerField(
         _("confirmation code"), default=0
@@ -82,7 +84,7 @@ class Vendor(models.Model):
     # withdrawal_amount = models.DecimalField(default=0.00, decimal_places=2, max_digits=15)
     closed = models.BooleanField(default=False)
     suspended = models.BooleanField(default=False)
-    avatar = models.ImageField(upload_to="media/venders-avatars/", default='vendor-avatar.default.png')
+    banner = models.ImageField(upload_to="media/Shop-Banners/", default='vendor-avatar.default.png')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

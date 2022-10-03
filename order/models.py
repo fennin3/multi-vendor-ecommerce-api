@@ -52,17 +52,18 @@ class OrderItem(models.Model):
 class  Order(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     user = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    items = models.ManyToManyField(OrderItem, null=True, blank=True)
+    items = models.ManyToManyField(OrderItem, blank=True)
     start_date = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
     paid_amount = models.FloatField(blank=True, null=True)
     used_coupon = models.CharField(max_length=50, blank=True, null=True)
     transaction_ref = models.CharField(max_length=255,blank=True, null=True)
-
+    # Shipping address
     recipient_name = models.CharField(max_length=100,blank=True, null=True)
     email = models.CharField(max_length=100,blank=True, null=True)
     address = models.CharField(max_length=100,blank=True, null=True)
     phone = models.CharField(max_length=100,blank=True, null=True)
+
     ordered = models.BooleanField(default=False)
 
     def __str__(self):
@@ -73,7 +74,7 @@ class  Order(models.Model):
     def get_total(self):
         total = 0
         for order_item in self.items.all():
-            total += order_item.get_total_item_price()
+            total += order_item.total_amount
         return total
 
 

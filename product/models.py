@@ -86,7 +86,7 @@ class Product(models.Model):
             self.thumbnail_created = True
         super(Product, self).save(*args, **kwargs)
 
-    def make_thumbnail(self, image, size=(300, 300)):
+    def make_thumbnail(self, image, size=(350, 350)):
         img = IMG.open(image)
         img.convert('RGB')
         img.thumbnail(size)
@@ -112,7 +112,7 @@ class Review(models.Model):
     rate = models.FloatField()
     review = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_reviews")
-    product = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

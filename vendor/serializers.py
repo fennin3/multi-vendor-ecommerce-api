@@ -32,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "password",
             "user_type",
-            "confirmation_code",
+            "avatar",
             "is_confirmed",
             "date_joined",
         )
@@ -40,7 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},
             "date_joined": {"read_only": True},
             "is_confirmed": {"read_only": True},
-            "confirmation_code": {"read_only": True},
             "user_type": {"read_only": True}
         }
 
@@ -65,7 +64,7 @@ class VendorSerializer2(serializers.ModelSerializer):
 
     class Meta:
         model = Vendor
-        fields = ("user", "shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'avatar')
+        fields = ("user", "shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')
 
         extra_kwargs = {
             "closed": {"read_only": True},
@@ -83,7 +82,7 @@ class VendorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vendor
-        fields = ("user", "shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'avatar')
+        fields = ("user", "shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')
 
         extra_kwargs = {
             "closed": {"read_only": True},
