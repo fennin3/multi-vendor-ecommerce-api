@@ -11,6 +11,7 @@ click-repl==0.1.6
 dj-database-url==1.0.0
 Django==3.2.4
 django-autoslug==1.9.8
+django-solo==2.0.0
 django-storages==1.13.1
 djangorestframework==3.14.0
 djangorestframework-jwt==1.11.0
