@@ -11,10 +11,11 @@ from django.shortcuts import get_object_or_404
 from order.models import OrderItem
 
 from product.models import Product
+from vendor.paginations import AdminVendorPagination
 
-from .models import ConfirmationCode, CustomUser, Vendor
+from .models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
 from .permissions import IsVendor
-from .serializers import UpdateOrderStatusSerializer, VendorSerializer, ConfirmAccountSerializer, UserLoginSerializer, VendorSerializer2
+from .serializers import DealOfTheDayRequestSerializer, UpdateOrderStatusSerializer, VendorSerializer, ConfirmAccountSerializer, UserLoginSerializer, VendorSerializer2
 
 from order.serializers import OrderItemSerializer
 
@@ -124,4 +125,46 @@ class VendorProfile(RetrieveAPIView):
         vendor = get_object_or_404(Vendor, user=request.user)
         data = VendorSerializer(vendor).data
         return Response(data, status=status.HTTP_200_OK)
+
+class VendorCloseOrOpen(APIView):
+    permission_classes = (IsVendor,)
+    
+    def patch(self, request):
+        vendor = Vendor.objects.select_related('user').get(user=request.user)
+        vendor.closed = not vendor.closed
+        print(vendor)
+        vendor.save()
+        val = "Closed" if vendor.closed else "Opened"
+        return Response(
+            {
+                "message":f"Your is {val}"
+            },status=status.HTTP_200_OK
+        )
+
+class CreateDealOfTheRequestView(generics.ListCreateAPIView):
+    queryset = DealOfTheDayRequest.objects.select_related('vendor','product').all()
+    serializer_class = DealOfTheDayRequestSerializer
+    permission_classes=(IsVendor,)
+    pagination_class = AdminVendorPagination
+
+    def get(self, request):
+        queryset = self.queryset.filter(vendor__user=request.user)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(queryset, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+class DeleteUpdateRetrieveDealOfTheRequestView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DealOfTheDayRequest.objects.select_related('vendor','product').all()
+    serializer_class = DealOfTheDayRequestSerializer
+    permission_classes=(IsVendor,)
+    lookup_field = "uid"
+
+
+        
+
 

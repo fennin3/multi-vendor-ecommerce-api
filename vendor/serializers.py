@@ -1,12 +1,12 @@
 from administrator.models import Country
 from vendor.utils import gen_confirmation_code
 from .exceptions import CustomException
-from .models import CustomUser, Vendor, ConfirmationCode
+from .models import CustomUser, DealOfTheDayRequest, Vendor, ConfirmationCode
 from .tasks import send_confirmation_mail
 
-from rest_framework import serializers, generics, status
+from rest_framework import serializers, status
 from rest_framework_jwt.settings import api_settings
-from rest_framework.response import Response
+
 
 
 
@@ -150,15 +150,17 @@ class UserLoginSerializer(serializers.Serializer):
             'token': jwt_token
         }
 
-ORDERED = 'ordered'
-SHIPPED = 'shipped'
-ARRIVED = 'arrived'
-STATUS_CHOICES = (
-    (ORDERED, 'Ordered'),
-    (SHIPPED, 'Shipped'),
-    (ARRIVED, 'Arrived')
-    )
-
 class UpdateOrderStatusSerializer(serializers.Serializer):
     uid = serializers.UUIDField()
+
+
+class DealOfTheDayRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=DealOfTheDayRequest
+        fields="__all__"
+
+        extra_kwargs = {
+            "approved":{"read_only":True},
+            "deal_date":{"read_only":True}
+        }
 

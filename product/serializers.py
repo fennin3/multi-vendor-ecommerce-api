@@ -4,13 +4,13 @@ from rest_framework import serializers
 from vendor.models import Vendor
 from vendor.serializers import UserSerializer, VendorSerializer
 
-from .models import Color, Product, Image, Category, ProductVariation, Review, Size
+from .models import Color, Product, Image, SubCategory, ProductVariation, Review, Size
 
 
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Category
+        model = SubCategory
         fields = ("name","slug")
 
         extra_kwargs = {
@@ -30,13 +30,13 @@ class ImageSerializer(serializers.ModelSerializer):
 class ProductSerializer2(serializers.ModelSerializer):
     categories = serializers.ListField(child=serializers.CharField())
     thumbnail = serializers.ImageField()
-    images = serializers.ListField(child=serializers.ImageField(), required=False, allow_null=True)
+    images = serializers.ListField(child=serializers.ImageField(), required=True, allow_null=False)
     sizes = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True)
     colors = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True)
     
     class Meta:
         model = Product
-        fields = ("name", "categories", "price", "stock","description","images", "discount_type","discount", "thumbnail", "sizes", "colors")
+        fields = ("name", "categories", "price", "stock","description", "additional_info", "images", "discount_type","discount", "thumbnail", "sizes", "colors")
 
         extra_kwargs = {
             "slug": {"read_only": True},
@@ -65,6 +65,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model=Review
         fields="__all__"
 
+
 class ProductSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
@@ -77,7 +78,7 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("uid", "slug","name", "categories", "price", "stock","description","images", "discount_type","discount", "thumbnail","sizes", "colors", "variants", "is_active", "is_approved", "reviews")
+        fields = ("uid", "slug","name", "categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail","sizes", "colors", "variants", "is_active", "is_approved", "reviews")
 
 
 class ProductSerializer3(serializers.ModelSerializer):
@@ -91,7 +92,16 @@ class ProductSerializer3(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("uid", "slug","name", "categories", "price", "stock","description","images", "is_active", "is_approved")
+        fields = ("uid", "slug","name", "categories", "price", "stock","description","additional_info","images", "is_active", "is_approved")
+
+
+class ReviewSerializer2(serializers.ModelSerializer):
+    user = UserSerializer()
+    product =ProductSerializer3()
+    class Meta:
+        model=Review
+        fields="__all__"
+
 
 
 

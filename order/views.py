@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Sum
 
 from customer.models import Customer
+from vendor.paginations import AdminVendorPagination
 from vendor.permissions import IsVendor
 from vendor.serializers import UpdateOrderStatusSerializer
 from .models import Order,OrderItem
@@ -76,6 +77,7 @@ def add_to_cart(request):
 class VendorAllOrder(generics.ListAPIView):
     permission_classes = (IsVendor,)
     authentication_class = JSONWebTokenAuthentication
+    pagination_class = AdminVendorPagination
     serializer_class = OrderItemSerializer
     queryset = OrderItem.objects.select_related('item').all()
 
@@ -94,6 +96,7 @@ class VendorOrder(generics.ListAPIView):
     permission_classes = (IsVendor,)
     authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
+    pagination_class = AdminVendorPagination
     queryset = OrderItem.objects.select_related('item').filter(status="ordered", ordered=True)
 
     def get(self, request):
@@ -111,6 +114,7 @@ class VendorShippedOrder(generics.ListAPIView):
     permission_classes = (IsVendor,)
     authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
+    pagination_class = AdminVendorPagination
     queryset = OrderItem.objects.select_related('item').filter(status="shipped", ordered=True)
 
     def get(self, request):
@@ -129,6 +133,7 @@ class VendorArrivedOrder(generics.ListAPIView):
     permission_classes = (IsVendor,)
     authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
+    pagination_class = AdminVendorPagination
     queryset = OrderItem.objects.select_related('item').filter(status="arrived", ordered=True)
 
     def get(self, request):

@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "$nerdthejohn-=fz_7q70^d+dhu9pp_^tufaqw!#6y_67ht@2tnr)yru!ksid&@"
         
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -84,6 +84,7 @@ INSTALLED_APPS = [
 
     # External Libraries
     "storages",
+    "solo",
 ]
 
 MIDDLEWARE = [

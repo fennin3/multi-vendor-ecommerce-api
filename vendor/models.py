@@ -1,4 +1,5 @@
 from email.policy import default
+from enum import unique
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -6,12 +7,6 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from autoslug import AutoSlugField
 import uuid
-
-
-
-
-
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -70,7 +65,7 @@ class CustomUser(AbstractUser):
 from administrator.models import Country
 
 class Vendor(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, related_name="vendor")
     shop_name = models.CharField(_("shop name"), blank=False, null=False, max_length=250)
     slug = AutoSlugField(populate_from='shop_name',unique=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True)
@@ -102,6 +97,18 @@ class ConfirmationCode(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
 
+from product.models import Product
+
+class DealOfTheDayRequest(models.Model):
+    uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    promo_price = models.DecimalField(decimal_places=2, max_digits=15)
+    actual_price = models.DecimalField(decimal_places=2, max_digits=15)
+    approved=models.BooleanField(default=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    deal_date = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 

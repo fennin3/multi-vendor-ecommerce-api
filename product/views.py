@@ -5,16 +5,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from vendor.models import Vendor
+from vendor.paginations import AdminVendorPagination
 from vendor.permissions import IsVendor
 
-from .models import Image, Product, Category, Image, ProductVariation, Size
-from .serializers import ImageSerializer, ProductSerializer, CategorySerializer, ProductSerializer2, VariantSerializer
+from .models import Image, Product, SubCategory, Image, ProductVariation, Review, Size
+from .serializers import (ImageSerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
+ ReviewSerializer2, VariantSerializer)
 
 
 
 class CategoryView(generics.ListCreateAPIView):
     permission_classes = ()
-    queryset = Category.objects.all().order_by('name')
+    queryset = SubCategory.objects.all().order_by('name')
     serializer_class = CategorySerializer
     
 
@@ -22,6 +24,7 @@ class CategoryView(generics.ListCreateAPIView):
 class CreateListProduct(generics.ListCreateAPIView):
     permission_classes = (IsVendor,)
     queryset = Product.objects.all().order_by('name')
+    pagination_class = AdminVendorPagination
     serializer_class = ProductSerializer2
 
     def post(self, request, *args, **kwargs):
@@ -52,7 +55,7 @@ class CreateListProduct(generics.ListCreateAPIView):
             description=serializer.data['description']
         )
 
-        categories = Category.objects.filter(uid__in=[category.strip() for category in categories])
+        categories = SubCategory.objects.filter(uid__in=[category.strip() for category in categories])
         sizes = Size.objects.filter(id__in=sizes)
         colors = Size.objects.filter(id__in=colors)
 
@@ -164,4 +167,30 @@ class VariantStatus(APIView):
             "message":f"Item is now {val}"
         },status=status.HTTP_200_OK)
 
+class ProductReviewsVendor(generics.ListAPIView):
+    permission_classes = (IsVendor,)
+    serializer_class = ReviewSerializer2
+    pagination_class = AdminVendorPagination
+    queryset = Review.objects.select_related('user','product').filter(is_active=True)
 
+    def get(self, request):
+        reviews = self.queryset.filter(product__vendor__user=request.user)
+        page = self.paginate_queryset(reviews)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(reviews, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+
+
+
+# page = self.paginate_queryset(products)
+#         if page is not None:
+#             serializer = ProductSerializer(page, many=True, context={'request': request})
+#             return self.get_paginated_response(serializer.data)
+
+#         serializer = ProductSerializer(products, many=True, context={'request': request})
+#         return Response(serializer.data,status=status.HTTP_200_OK)
