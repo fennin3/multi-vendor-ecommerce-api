@@ -4,7 +4,7 @@ from rest_framework import serializers
 from vendor.models import Vendor
 from vendor.serializers import UserSerializer, VendorSerializer
 
-from .models import Color, Product, Image, SubCategory, ProductVariation, Review, Size
+from .models import Category, Color, DealOfTheDay, Product, Image, SubCategory, ProductVariation, Review, Size
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -26,9 +26,14 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = ("uid","image",)
 
+class MainCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields="__all__"
+
 
 class ProductSerializer2(serializers.ModelSerializer):
-    categories = serializers.ListField(child=serializers.CharField())
+    sub_categories = serializers.ListField(child=serializers.CharField())
     thumbnail = serializers.ImageField()
     images = serializers.ListField(child=serializers.ImageField(), required=True, allow_null=False)
     sizes = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True)
@@ -36,7 +41,7 @@ class ProductSerializer2(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("name", "categories", "price", "stock","description", "additional_info", "images", "discount_type","discount", "thumbnail", "sizes", "colors")
+        fields = ("name","category", "sub_categories", "price", "stock","description", "additional_info", "images", "discount_type","discount", "thumbnail", "sizes", "colors")
 
         extra_kwargs = {
             "slug": {"read_only": True},
@@ -67,9 +72,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    categories = CategorySerializer(many=True, read_only=True)
+    category = MainCategorySerializer(read_only=True)
+    sub_categories = CategorySerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
-    categories = CategorySerializer(many=True, read_only=True)
+    # categories = CategorySerializer(many=True, read_only=True)
     uid = serializers.UUIDField(read_only=True)
     colors = ColorSerializer(read_only=True, many=True)
     sizes = SizeSerializer(read_only=True, many=True)
@@ -78,13 +84,13 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("uid", "slug","name", "categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail","sizes", "colors", "variants", "is_active", "is_approved", "reviews")
+        fields = ("uid", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail","sizes", "colors", "variants", "is_active", "is_approved", "reviews","created_at", "updated_at")
 
 
 class ProductSerializer3(serializers.ModelSerializer):
-    categories = CategorySerializer(many=True, read_only=True)
+    category = MainCategorySerializer(read_only=True)
+    sub_categories = CategorySerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
-    categories = CategorySerializer(many=True, read_only=True)
     uid = serializers.UUIDField(read_only=True)
     # colors = ColorSerializer(read_only=True, many=True)
     # sizes = SizeSerializer(read_only=True, many=True)
@@ -92,7 +98,7 @@ class ProductSerializer3(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("uid", "slug","name", "categories", "price", "stock","description","additional_info","images", "is_active", "is_approved")
+        fields = ("uid", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "is_active", "is_approved")
 
 
 class ReviewSerializer2(serializers.ModelSerializer):
@@ -102,6 +108,12 @@ class ReviewSerializer2(serializers.ModelSerializer):
         model=Review
         fields="__all__"
 
+
+class DealOfTheDaySerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+    class Meta:
+        model=DealOfTheDay
+        fields="__all__"
 
 
 

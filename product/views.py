@@ -23,7 +23,7 @@ class CategoryView(generics.ListCreateAPIView):
 
 class CreateListProduct(generics.ListCreateAPIView):
     permission_classes = (IsVendor,)
-    queryset = Product.objects.all().order_by('name')
+    queryset = Product.objects.all().order_by('-created_at')
     pagination_class = AdminVendorPagination
     serializer_class = ProductSerializer2
 
@@ -34,8 +34,8 @@ class CreateListProduct(generics.ListCreateAPIView):
         sizes =[]
         colors =[]
 
-        if serializer.data['categories']:
-            categories = str(serializer.data['categories'][0]).replace('[','').replace(']','').split(',')
+        if serializer.data['sub_categories']:
+            categories = str(serializer.data['sub_categories'][0]).replace('[','').replace(']','').split(',')
         if serializer.data['sizes']:
             sizes = str(serializer.data['sizes'][0]).replace('[','').replace(']','').split(',')
         if serializer.data['colors']:
@@ -59,7 +59,7 @@ class CreateListProduct(generics.ListCreateAPIView):
         sizes = Size.objects.filter(id__in=sizes)
         colors = Size.objects.filter(id__in=colors)
 
-        product.categories.set(categories)
+        product.sub_categories.set(categories)
         product.sizes.set([size.id for size in sizes])
         product.colors.set([color.id for color in colors])
         
@@ -78,9 +78,9 @@ class CreateListProduct(generics.ListCreateAPIView):
     def get(self, request, vendor_id=None):
 
         if vendor_id:
-            products = Product.objects.select_related('vendor').filter(vendor__user__uid=vendor_id)
+            products = self.queryset.filter(vendor__user__uid=vendor_id)
         else:
-            products = Product.objects.all()
+            products = self.queryset.all()
 
         page = self.paginate_queryset(products)
         if page is not None:

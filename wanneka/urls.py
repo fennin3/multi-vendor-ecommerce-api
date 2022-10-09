@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from administrator.views import ListCountries, GetSiteInfo,UpdateSiteInfo
+from vendor.views import CustomUserDetail
 
 urlpatterns = [
     path('admin-dashboard/', admin.site.urls),
@@ -17,6 +18,9 @@ urlpatterns = [
 
     # General Info
     path('countries/', ListCountries.as_view(), name="countries"),
+
+
+    path('users/update/<uid>/', CustomUserDetail.as_view(), name="update_user"),
 
     # Site Info
     path("config/", GetSiteInfo.as_view(), name="get_site_info"),

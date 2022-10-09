@@ -1,12 +1,15 @@
 #API VIews
+from datetime import datetime
 from rest_framework import generics, status
-from rest_framework.generics import RetrieveAPIView, CreateAPIView
+from rest_framework.generics import CreateAPIView
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from vendor.models import ConfirmationCode, CustomUser, Vendor
+from product.models import DealOfTheDay
+from product.serializers import DealOfTheDaySerializer
+from vendor.models import ConfirmationCode, Vendor
 
 from .models import Customer
 from .permissions import IsCustomer
@@ -96,3 +99,24 @@ class CustomerLogin(CreateAPIView):
         return Response(response, status=status_code)
 
   
+class RetrieveDealOfTheDay(APIView):
+    permission_classes= (AllowAny,)
+    serializer_class = DealOfTheDaySerializer
+
+
+    def get(self, request):
+        deals = DealOfTheDay.objects.select_related('product').filter(is_active=True, end_date__gte=datetime.now()).order_by('-start_date')
+
+        if deals.exists():
+            deal = deals[0]
+            data = self.serializer_class(deal).data
+            return Response({
+                "deal":data
+            },status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "deal":None
+            }, status=status.HTTP_200_OK)
+
+
+

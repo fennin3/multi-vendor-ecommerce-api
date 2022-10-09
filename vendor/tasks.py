@@ -18,7 +18,6 @@ logger = get_task_logger(__name__)
 
 @shared_task()
 def send_confirmation_mail(subject, new_user,code):
-    # sleep()
     mail_subject = subject
     context = {'new_user':new_user,"code":code}
     message = loader.get_template('mail.html').render(context)

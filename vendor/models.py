@@ -1,5 +1,6 @@
 from email.policy import default
 from enum import unique
+from random import choices
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -100,15 +101,28 @@ class ConfirmationCode(models.Model):
 from product.models import Product
 
 class DealOfTheDayRequest(models.Model):
+    STATUS_CHOICES = (
+        ('accepted','accepted'),
+        ('pending','pending'),
+        ('declined','declined')
+    )
     uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     promo_price = models.DecimalField(decimal_places=2, max_digits=15)
     actual_price = models.DecimalField(decimal_places=2, max_digits=15)
-    approved=models.BooleanField(default=True)
+    approved=models.BooleanField(default=False)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="pending")
+    note = models.TextField(null=True, blank=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    deal_date = models.DateTimeField(blank=True, null=True)
+    deal_start = models.DateTimeField(blank=True, null=True)
+    deal_end = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'Deal of the day request'
+        verbose_name_plural = 'Deal of the day requests' 
 
 
 

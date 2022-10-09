@@ -75,7 +75,8 @@ class Product(models.Model):
     )
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=200)
-    categories = models.ManyToManyField(SubCategory, related_name='categories')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
+    sub_categories = models.ManyToManyField(SubCategory, related_name='sub_products')
     slug = AutoSlugField(populate_from="name")
     stock = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=15, decimal_places=2)
@@ -90,7 +91,7 @@ class Product(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, related_name="tag_products")
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='vendor')
     is_approved = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -157,6 +158,12 @@ class DealOfTheDay(models.Model):
     is_active = models.BooleanField(default=True)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()
+
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'Deal the day'
+        verbose_name_plural = 'Deal of the day' 
     
 
 

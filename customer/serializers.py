@@ -1,13 +1,13 @@
 from vendor.exceptions import CustomException
 from vendor.models import ConfirmationCode, CustomUser
 from vendor.tasks import send_confirmation_mail
-from vendor.serializers import UserSerializer, UserLoginSerializer
+from vendor.serializers import UserSerializer
 
 
-from rest_framework import serializers, generics, status
+from rest_framework import serializers, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.response import Response
-
+from django.contrib.auth import get_user_model
 
 
 from django.contrib.auth import authenticate
@@ -18,16 +18,24 @@ from vendor.utils import gen_confirmation_code
 from .models import Customer
 
 
+User = get_user_model()
+
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
+class CustomerSerializer2(serializers.ModelSerializer):
+    country = serializers.UUIDField(required=False)
+    city = serializers.CharField(max_length=255,required=False)
+    phone_number = serializers.CharField(max_length=16, required=False)
+    class Meta:
+        model=Customer
+        fields = ("address","country", "city","address", "phone_number")
 
 class CustomerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-
     class Meta:
         model = Customer
-        fields = ("user", "address","country", "city","address", "phone_number","avatar")
+        fields = ("user", "address","country", "city","address", "phone_number")
 
 
     def create(self, validated_data):
@@ -36,9 +44,10 @@ class CustomerSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(**user_data)
         user.active = False
         user.save()
-        cc = ConfirmationCode.objects(code=gen_confirmation_code(), user=user)
+        cc = ConfirmationCode.objects.create(code=gen_confirmation_code(), user=user)
         # send_confirmation_mail().delay('Confirm Your Account', user, cc.code)
-        send_confirmation_mail('Confirm Your Account', user, cc.code)
+        new_user = {'first_name':user.first_name, 'email':user.email}
+        send_confirmation_mail('Confirm Your Account', new_user, cc.code)
         customer = Customer.objects.create(user=user, **validated_data)
         return customer
 

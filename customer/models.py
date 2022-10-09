@@ -10,6 +10,10 @@ class Customer(models.Model):
     city = models.CharField(max_length=255)
     address = models.TextField(_("address"), null=True, blank=True)
     phone_number = models.CharField(_("phone number"), blank=False, null=False, max_length=16)
+    is_active = models.BooleanField(default=True)
+    suspended = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     # avatar = models.ImageField(upload_to="media/Customer-Avatar/", default="profile.png")
 
     def __str__(self):

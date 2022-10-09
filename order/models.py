@@ -1,4 +1,3 @@
-from email.policy import default
 import uuid
 from django.db import models
 from product.models import Color, Product, Size
@@ -7,19 +6,22 @@ import datetime
 from decimal import Decimal, getcontext
 
 
-getcontext().prec = 2
 
-ORDERED = 'ordered'
-SHIPPED = 'shipped'
-ARRIVED = 'arrived'
+getcontext().prec = 2
 
 
 class OrderItem(models.Model):
     STATUS_CHOICES = (
-        (ORDERED, 'Ordered'),
-        (SHIPPED, 'Shipped'),
-        (ARRIVED, 'Arrived')
-        )
+        ('pending','pending'),
+        ('order_placed', 'order_placed'),
+        ('order_confirmed', 'order_confirmed'),
+        ('processed', 'processed'),
+        ('shipped', 'shipped'),
+        ('delivered', 'delivered'),
+        ('cancelled', 'cancelled'),
+        ('order_returned', 'order_returned'),
+        ('refunded', 'refunded'),
+    )
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     user = models.ForeignKey(Customer, on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
@@ -29,11 +31,17 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=15,decimal_places=2)
     discount_price = models.DecimalField(max_digits=15,decimal_places=2, default=0.00)
     total_amount = models.DecimalField(max_digits=15,decimal_places=2, default=0.00)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=ORDERED)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     quantity = models.IntegerField(default=1)
+
     ordered_date = models.DateTimeField(blank=True,null=True)
+    confirmed_date = models.DateTimeField(blank=True,null=True)
+    processed_date = models.DateTimeField(blank=True,null=True)
     shipped_date = models.DateTimeField(blank=True, null=True)
-    arrived_date = models.DateTimeField(blank=True, null=True)
+    delivered_date = models.DateTimeField(blank=True, null=True)
+    cancelled_date = models.DateTimeField(blank=True, null=True)
+    refunded_date = models.DateTimeField(blank=True, null=True)
+    returned_date = models.DateTimeField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.discount_price > 0:
@@ -50,6 +58,17 @@ class OrderItem(models.Model):
 
 
 class  Order(models.Model):
+    STATUS_CHOICES = (
+        ('pending','pending'),
+        ('order_placed', 'order_placed'),
+        ('order_confirmed', 'order_confirmed'),
+        ('processed', 'processed'),
+        ('shipped', 'shipped'),
+        ('delivered', 'delivered'),
+        ('cancelled', 'cancelled'),
+        ('order_returned', 'order_returned'),
+        ('refunded', 'refunded'),
+    )
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     user = models.ForeignKey(Customer, on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem, blank=True)
@@ -58,13 +77,24 @@ class  Order(models.Model):
     paid_amount = models.FloatField(blank=True, null=True)
     used_coupon = models.CharField(max_length=50, blank=True, null=True)
     transaction_ref = models.CharField(max_length=255,blank=True, null=True)
+
     # Shipping address
     recipient_name = models.CharField(max_length=100,blank=True, null=True)
     email = models.CharField(max_length=100,blank=True, null=True)
     address = models.CharField(max_length=100,blank=True, null=True)
     phone = models.CharField(max_length=100,blank=True, null=True)
-
     ordered = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Dates
+    ordered_date = models.DateTimeField(blank=True,null=True)
+    confirmed_date = models.DateTimeField(blank=True,null=True)
+    processed_date = models.DateTimeField(blank=True,null=True)
+    shipped_date = models.DateTimeField(blank=True, null=True)
+    delivered_date = models.DateTimeField(blank=True, null=True)
+    cancelled_date = models.DateTimeField(blank=True, null=True)
+    refunded_date = models.DateTimeField(blank=True, null=True)
+    returned_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"Order by {self.uid}"
@@ -92,5 +122,10 @@ class  Order(models.Model):
     def mark_ordered(self):
         for item in self.items.all():
             item.ordered =True
+            item.status
             item.ordered_date = datetime.datetime.now()
             item.save()
+
+    def update_order_status(self, date, status):
+        for item in self.items.all():
+            item.status = status

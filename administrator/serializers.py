@@ -8,7 +8,7 @@ from vendor.models import CustomUser
 from vendor.serializers import UserSerializer
 from vendor.tasks import send_confirmation_mail
 
-from .models import Administrator, SiteConfiguration, SiteAddress
+from .models import Administrator, SiteConfiguration, SiteAddress, ShippingFeeZone, Country
 
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
@@ -28,9 +28,15 @@ class AdminSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(**user_data)
         user.active = False
         user.save()
-        send_confirmation_mail().delay('Confirm Your Account', user, 'mail.html')
+        # send_confirmation_mail().delay('Confirm Your Account', user, 'mail.html')
         administrator = Administrator.objects.create(user=user, **validated_data)
         return administrator
+
+class AdminSerializer2(serializers.ModelSerializer):
+    # user = UserSerializer()
+    class Meta:
+        model = Administrator 
+        fields = ("user","phone_number")
 
 class ConfirmAccountSerializer(serializers.Serializer):
     confirmation_code = serializers.IntegerField(required=True)
@@ -90,4 +96,48 @@ class SiteConfigSerializer(serializers.ModelSerializer):
         exclude=('id',)
 
 
-# class 
+class ApproveDealOfTheDay(serializers.Serializer):
+    deal_request = serializers.UUIDField()
+    overwrite = serializers.BooleanField(default=False)
+    note = serializers.CharField(max_length=1000000, required=False)
+
+class DeclineDealOfTheDay(serializers.Serializer):
+    deal_request = serializers.UUIDField()
+    note = serializers.CharField(max_length=1000000, required=False)
+
+
+class SuspendVendorSerializer(serializers.Serializer):
+    uid = serializers.UUIDField()
+
+class UpdateOrderStatusSerializer(serializers.Serializer):
+    order_uid = serializers.UUIDField()
+    status = serializers.CharField(max_length=255)
+
+
+class ShippingFeeZoneSerializer(serializers.ModelSerializer):
+    shipping_fee = serializers.DecimalField(max_digits=9, decimal_places=2,)
+    class Meta:
+        model=ShippingFeeZone
+        fields="__all__"
+
+class CountrySerializer(serializers.ModelSerializer):
+    shipping_zones = ShippingFeeZoneSerializer(read_only=True, many=True)
+    # states = StateSerializer(read_only=True)
+    class Meta:
+        model=Country
+        fields="__all__"
+
+class CountrySerializer2(serializers.ModelSerializer):
+    shipping_zones = serializers.ListField(child=serializers.CharField(),required=True)
+    class Meta:
+        model=Country
+        fields="__all__"
+
+
+class CountrySerializer3(serializers.ModelSerializer):
+    shipping_zones = serializers.ListField(child=serializers.CharField(),required=False)
+    code = serializers.CharField(max_length=4, required=False)
+    tel = serializers.CharField(max_length=4, required=False)
+    class Meta:
+        model=Country
+        fields="__all__"

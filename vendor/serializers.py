@@ -1,4 +1,3 @@
-from administrator.models import Country
 from vendor.utils import gen_confirmation_code
 from .exceptions import CustomException
 from .models import CustomUser, DealOfTheDayRequest, Vendor, ConfirmationCode
@@ -53,7 +52,12 @@ class ResendEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
 
+from administrator.models import Country
+from administrator.serializers import ShippingFeeZoneSerializer
+
+
 class CountrySerializer(serializers.ModelSerializer):
+    shipping_zones = ShippingFeeZoneSerializer(read_only=True, many=True)
     class Meta:
         model=Country
         fields="__all__"
@@ -74,7 +78,18 @@ class VendorSerializer2(serializers.ModelSerializer):
         }
         lookup_field = 'user__uid'
 
+class VendorSerializer3(serializers.ModelSerializer):
+    # user = UserSerializer()
+    class Meta:
+        model = Vendor
+        fields = ("shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')
 
+        extra_kwargs = {
+            "closed": {"read_only": True},
+            "suspended": {"read_only": True},
+            "pending_balance": {"read_only": True},
+            "balance": {"read_only": True},
+        }
 
 
 class VendorSerializer(serializers.ModelSerializer):
@@ -99,7 +114,7 @@ class VendorSerializer(serializers.ModelSerializer):
         user.save()
         
 
-        new_user = {'first_name':user.first_name, 'email':user.email, 'confirmation_code':user.confirmation_code}
+        new_user = {'first_name':user.first_name, 'email':user.email}
         
         cc = ConfirmationCode.objects.create(code=gen_confirmation_code(), user=user)
         # send_confirmation_mail.delay('Confirm Your Account', new_user, cc.code)
@@ -116,7 +131,6 @@ class ConfirmAccountSerializer(serializers.Serializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-
     email = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=128, write_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
@@ -161,6 +175,7 @@ class DealOfTheDayRequestSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {
             "approved":{"read_only":True},
-            "deal_date":{"read_only":True}
+            "deal_date":{"read_only":True},
+            "status":{"read_only":True},
         }
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import CustomUser, Vendor, ConfirmationCode
+from .models import CustomUser, Vendor, ConfirmationCode, DealOfTheDayRequest
 
 class VendorAdmin(admin.ModelAdmin):
     list_display = ("shop_name","user")
@@ -8,3 +8,4 @@ class VendorAdmin(admin.ModelAdmin):
 admin.site.register(CustomUser)
 admin.site.register(Vendor,VendorAdmin)
 admin.site.register(ConfirmationCode)
+admin.site.register(DealOfTheDayRequest)

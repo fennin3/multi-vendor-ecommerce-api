@@ -6,7 +6,8 @@ class IsCustomer(IsAuthenticated):
     def has_permission(self, request, view):
         return bool(
             request.user and request.user.is_authenticated \
-                and request.user.is_confirmed and request.user.user_type == 'CUSTOMER'
+                and request.user.is_confirmed and request.user.user_type == 'CUSTOMER' and request.user.customer !=None \
+                and not request.user.customer.suspended
         )
 
 class CustomerAccessPermission(permissions.BasePermission):

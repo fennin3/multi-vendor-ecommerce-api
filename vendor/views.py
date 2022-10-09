@@ -14,8 +14,8 @@ from product.models import Product
 from vendor.paginations import AdminVendorPagination
 
 from .models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
-from .permissions import IsVendor
-from .serializers import DealOfTheDayRequestSerializer, UpdateOrderStatusSerializer, VendorSerializer, ConfirmAccountSerializer, UserLoginSerializer, VendorSerializer2
+from .permissions import IsUser, IsVendor
+from .serializers import DealOfTheDayRequestSerializer, UpdateOrderStatusSerializer, UserSerializer, VendorSerializer, ConfirmAccountSerializer, UserLoginSerializer, VendorSerializer2, VendorSerializer3
 
 from order.serializers import OrderItemSerializer
 
@@ -112,9 +112,9 @@ class VendorLogin(APIView):
 
 class VendorUpdate(UpdateAPIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
     queryset = Vendor.objects.all()
-    serializer_class = VendorSerializer
+    serializer_class = VendorSerializer3
     lookup_field = "user__uid"
 
 class VendorProfile(RetrieveAPIView):
@@ -165,6 +165,10 @@ class DeleteUpdateRetrieveDealOfTheRequestView(generics.RetrieveUpdateDestroyAPI
     lookup_field = "uid"
 
 
-        
+class CustomUserDetail(generics.UpdateAPIView):
+    permission_classes = (IsUser,)
+    serializer_class = UserSerializer
+    queryset = CustomUser.objects.all()
+    lookup_field = "uid"        
 
 

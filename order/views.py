@@ -79,10 +79,10 @@ class VendorAllOrder(generics.ListAPIView):
     authentication_class = JSONWebTokenAuthentication
     pagination_class = AdminVendorPagination
     serializer_class = OrderItemSerializer
-    queryset = OrderItem.objects.select_related('item').all()
+    queryset = OrderItem.objects.select_related('item').filter(ordered=True)
 
     def get(self, request):
-        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid)
+        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid).order_by('-ordered_date')
 
         page = self.paginate_queryset(orderitems)
         if page is not None:
@@ -97,10 +97,10 @@ class VendorOrder(generics.ListAPIView):
     authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
     pagination_class = AdminVendorPagination
-    queryset = OrderItem.objects.select_related('item').filter(status="ordered", ordered=True)
+    queryset = OrderItem.objects.select_related('item').filter(status="order_placed", ordered=True)
 
     def get(self, request):
-        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid)
+        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid).order_by('-ordered_date')
 
         page = self.paginate_queryset(orderitems)
         if page is not None:
@@ -118,7 +118,7 @@ class VendorShippedOrder(generics.ListAPIView):
     queryset = OrderItem.objects.select_related('item').filter(status="shipped", ordered=True)
 
     def get(self, request):
-        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid)
+        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid).order_by('-ordered_date')
 
         page = self.paginate_queryset(orderitems)
         if page is not None:
@@ -134,10 +134,10 @@ class VendorArrivedOrder(generics.ListAPIView):
     authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
     pagination_class = AdminVendorPagination
-    queryset = OrderItem.objects.select_related('item').filter(status="arrived", ordered=True)
+    queryset = OrderItem.objects.select_related('item').filter(status="delivered", ordered=True)
 
     def get(self, request):
-        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid)
+        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid).order_by('-ordered_date')
 
         page = self.paginate_queryset(orderitems)
         if page is not None:

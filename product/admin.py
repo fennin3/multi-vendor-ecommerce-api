@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SubCategory, Product, Image, Color, Review, Size, ProductVariation, Category
+from .models import SubCategory, Product, Image, Color, Review, Size, ProductVariation, Category,DealOfTheDay
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name","uid")
@@ -11,12 +11,15 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ("uid","rate","created_at")
 
 
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("name","uid")
+
 admin.site.register(SubCategory, CategoryAdmin)
 admin.site.register(Category)
-admin.site.register(Product)
+admin.site.register(Product, ProductAdmin)
 admin.site.register(Image)
 admin.site.register(Size)
+admin.site.register(DealOfTheDay)
 admin.site.register(Color)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(ProductVariation,ProductVariationAdmin)
-
