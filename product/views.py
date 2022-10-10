@@ -1,4 +1,6 @@
-from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.shortcuts import render, get_object_or_404
+
+from rest_framework.permissions import AllowAny
 
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -15,10 +17,14 @@ from .serializers import (ImageSerializer, MainCategorySerializer, ProductSerial
 
 
 class CategoryView(generics.ListCreateAPIView):
-    permission_classes = ()
+    permission_classes = (AllowAny,)
     queryset = SubCategory.objects.all().order_by('name')
     serializer_class = CategorySerializer
     
+class ListAllProducts(generics.ListAPIView):
+    permission_classes = ()
+    queryset = Product.objects.all().order_by("-created_at")
+    serializer_class = ProductSerializer
 
 
 class CreateListProduct(generics.ListCreateAPIView):
@@ -73,6 +79,29 @@ class CreateListProduct(generics.ListCreateAPIView):
         return Response(
             {"message": "Product successfully created!"}, status=status.HTTP_201_CREATED
         )
+
+
+    def get(self, request, vendor_id=None):
+
+        if vendor_id:
+            products = self.queryset.filter(vendor__user__uid=vendor_id)
+        else:
+            products = self.queryset.all()
+
+        page = self.paginate_queryset(products)
+        if page is not None:
+            serializer = ProductSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+class ListVendorProduct(generics.ListAPIView):
+    permission_classes = (IsVendor,)
+    queryset = Product.objects.all().order_by('-created_at')
+    pagination_class = AdminVendorPagination
+    serializer_class = ProductSerializer2
 
 
     def get(self, request, vendor_id=None):
@@ -255,10 +284,4 @@ class SubCategoryProducts(generics.ListAPIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 
-# page = self.paginate_queryset(products)
-#         if page is not None:
-#             serializer = ProductSerializer(page, many=True, context={'request': request})
-#             return self.get_paginated_response(serializer.data)
 
-#         serializer = ProductSerializer(products, many=True, context={'request': request})
-#         return Response(serializer.data,status=status.HTTP_200_OK)

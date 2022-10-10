@@ -29,13 +29,26 @@ class CustomerSerializer2(serializers.ModelSerializer):
     phone_number = serializers.CharField(max_length=16, required=False)
     class Meta:
         model=Customer
-        fields = ("address","country", "city","address", "phone_number")
+        fields = ("address","country", "city", "phone_number")
 
 class CustomerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model = Customer
-        fields = ("user", "address","country", "city","address", "phone_number")
+        fields = ("user", "address","country", "city", "phone_number")
+
+class CustomerSerializer2(serializers.ModelSerializer):
+    # user = UserSerializer()
+    class Meta:
+        model = Customer
+        fields = ("address","country", "city", "phone_number")
+
+        extra_kwargs = {
+            "country":{"required":False}, 
+            "address":{"required":False}, 
+            "city":{"required":False}, 
+            "phone_number":{"required":False}, 
+        }
 
 
     def create(self, validated_data):

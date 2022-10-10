@@ -13,7 +13,7 @@ from vendor.models import ConfirmationCode, Vendor
 
 from .models import Customer
 from .permissions import IsCustomer
-from .serializers import CustomerSerializer, UserLoginSerializer, ConfirmAccountSerializer
+from .serializers import CustomerSerializer, CustomerSerializer2, UserLoginSerializer, ConfirmAccountSerializer
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -34,6 +34,24 @@ class CustomerProfile(generics.RetrieveAPIView):
         customer = get_object_or_404(Customer, user=request.user)
         data = CustomerSerializer(customer).data
         return Response(data, status=status.HTTP_200_OK)
+
+
+# Update details of a vendor
+class CustomerProfileUpdate(generics.UpdateAPIView):
+    permission_classes = (IsCustomer,)
+    serializer_class = CustomerSerializer2
+    queryset = Customer.objects.all()
+    lookup_field = "user__uid"
+
+    def patch(self, request):
+        customer = get_object_or_404(Customer, user=request.user)
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.update(customer,serializer.validated_data)
+
+        return Response(self.serializer_class(data).data, status=status.HTTP_200_OK)
 
 # Confirm user account
 class ConfirmAccount(generics.GenericAPIView):

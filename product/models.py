@@ -86,6 +86,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=15, decimal_places=2)
     discount_type = models.CharField(max_length=25, choices=DISCOUNT_TYPE, default="AMT")
     discount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+    discounted_price = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     description = models.TextField(blank=True, null=False, default="")
     additional_info = models.TextField(blank=True, null=False, default="")
     thumbnail = models.ImageField(upload_to="media/Products-Avatar/", blank=True, null=True)
@@ -106,6 +107,12 @@ class Product(models.Model):
         if not self.thumbnail_created:
             self.thumbnail = self.make_thumbnail(self.thumbnail)
             self.thumbnail_created = True
+
+        if self.discount > 0.00:
+            if self.discount_type == "AMT":
+                self.discounted_price = self.price - self.discount
+            else:
+                self.discounted_price  = self.price - (self.price * self.discount)
         super(Product, self).save(*args, **kwargs)
 
     def make_thumbnail(self, image, size=(350, 350)):

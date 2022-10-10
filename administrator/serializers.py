@@ -97,9 +97,9 @@ class SiteConfigSerializer(serializers.ModelSerializer):
 
 
 class ApproveDealOfTheDay(serializers.Serializer):
-    deal_request = serializers.UUIDField()
+    product = serializers.UUIDField()
     overwrite = serializers.BooleanField(default=False)
-    note = serializers.CharField(max_length=1000000, required=False)
+    # note = serializers.CharField(max_length=1000000, required=False)
 
 class DeclineDealOfTheDay(serializers.Serializer):
     deal_request = serializers.UUIDField()

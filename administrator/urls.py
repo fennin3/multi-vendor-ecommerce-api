@@ -2,11 +2,11 @@ from django.urls import path
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTDRequests,
+from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTD,
  ApproveProduct,  BankDetailsView, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeclineDOTDRequest, DeliveredOrders, 
  DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders,
-  RetrieveApprovedDealOfTheDayRequests, RetrieveCustomerOrder, RetrievePendingDealOfTheDayRequests, ProcessedOrders, RetrieveUpdateDestroyAdminView, 
+  RetrieveApprovedDealOfTheDayRequests, RetrieveCustomerOrder, RetrievePendingDealOfTheDayRequests, ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
   ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer, SuspendVendor, UpdateAddress, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
@@ -48,12 +48,15 @@ urlpatterns = [
     path('orders/analytics/daily/', DailyOrdersSummary.as_view(), name="daily_summary"),
     path('orders/analytics/monthly/', MonthlyOrdersSummary.as_view(), name="monthly_summary"),
     path('orders/analytics/yearly/', AnnualOrdersSummary.as_view(), name="year_summary"),
+
+    
     
     path('orders/status/', UpdateOrderStatus.as_view(), name='order_status'),
-    path('deals/pending/', RetrievePendingDealOfTheDayRequests.as_view(), name='unapproved_deals'),
-    path('deals/approved/', RetrieveApprovedDealOfTheDayRequests.as_view(), name='approved_deals'),
-    path('deals/approve/', ApproveDOTDRequests.as_view(), name='approve_deals'),
-    path('deals/decline/', DeclineDOTDRequest.as_view(), name='decline_deals'),
+    # path('deals/pending/', RetrievePendingDealOfTheDayRequests.as_view(), name='unapproved_deals'),
+    # path('deals/approved/', RetrieveApprovedDealOfTheDayRequests.as_view(), name='approved_deals'),
+    path('deals/', ApproveDOTD.as_view(), name='approve_deals'),
+    path('deals/<uid>/', RetrieveRemoveUpdateDOTD.as_view(), name='update_retrieve'),
+    # path('deals/decline/', DeclineDOTDRequest.as_view(), name='decline_deals'),
     path('add-address/', AddSiteAddress.as_view(), name='add_address'),
     path('add-address/<pk>/', UpdateAddress.as_view(), name='add_address'),
     path('update-address/', UpdateAddress.as_view(), name='update_address'),

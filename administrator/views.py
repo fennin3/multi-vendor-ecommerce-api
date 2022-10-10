@@ -12,7 +12,7 @@ from customer.serializers import CustomerSerializer, CustomerSerializer2
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
 from product.models import Category, DealOfTheDay, Product, SubCategory
-from product.serializers import CategorySerializer, CategoryUpdateSerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SubCategorySerializer
+from product.serializers import CategorySerializer, CategoryUpdateSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SubCategorySerializer
 from transactions.models import PaymentMethods
 from transactions.serializers import PaymentMethodSerializer2
 from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
@@ -182,16 +182,17 @@ class RetrieveApprovedDealOfTheDayRequests(generics.ListAPIView):
     permission_classes=(IsSuperuser,)
     pagination_class = AdminVendorPagination
 
-class ApproveDOTDRequests(APIView):
-    permission_classes=(IsSuperuser,)
-    serializer_class = ApproveDealOfTheDay
-
+class ApproveDOTD(generics.ListCreateAPIView):
+    permission_classes = (IsSuperuser,)
+    serializer_class = DealOfTheDaySerializer
+    pagination_class = AdminVendorPagination
+    queryset = DealOfTheDay.objects.all().order_by("-end_date")    
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = ApproveDealOfTheDay(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        deal_request = get_object_or_404(DealOfTheDayRequest, uid=serializer.data['deal_request'])
+        product = get_object_or_404(Product, uid=serializer.data['product'])
 
         if serializer.data['overwrite'] == False:
             if DealOfTheDay.objects.filter(is_active=True,end_date__gte=datetime.now()).exists():
@@ -206,21 +207,14 @@ class ApproveDOTDRequests(APIView):
                 
                 end_date = datetime.now() + timedelta(days=1)
                 deal = DealOfTheDay.objects.create(
-                    product = deal_request.product,
-                    actual_price = deal_request.actual_price,
-                    promo_price = deal_request.promo_price,
+                    product = product,
+                    actual_price = product.price,
+                    promo_price = product.discounted_price,
                     end_date = end_date
                 )
 
-                deal_request.approved=True
-                deal_request.deal_start= datetime.now()
-                deal_request.deal_end = end_date
-                deal_request.status = 'accepted'
-                deal_request.note =  "" if serializer.data.get('note',None) == None else serializer.data['note']
-                deal_request.save()
-
                 try:
-                    send_deal_request_approval_mail("Deal Of The Day request approved",{"first_name":deal_request.vendor.user.first_name,"email":deal_request.vendor.user.email},{"date_start":deal_request.deal_start,"date_end":deal_request.deal_end})
+                    send_deal_request_approval_mail("Deal Of The Day request approved",{"first_name":product.vendor.user.first_name,"email":product.vendor.user.email},{"date_start":deal.start_date,"date_end":deal.end_date})
                 except Exception as e:
                     print(e)
                 
@@ -235,25 +229,55 @@ class ApproveDOTDRequests(APIView):
             
             end_date = datetime.now() + timedelta(days=1)
             deal = DealOfTheDay.objects.create(
-                product = deal_request.product,
-                actual_price = deal_request.actual_price,
-                promo_price = deal_request.promo_price,
+                product = product,
+                actual_price = product.price,
+                promo_price = product.discounted_price,
                 end_date = end_date
             )
 
-            deal_request.approved=True
-            deal_request.deal_start= datetime.now()
-            deal_request.deal_end = end_date
-            deal_request.save()
+            # deal_request.approved=True
+            # deal_request.deal_start= datetime.now()
+            # deal_request.deal_end = end_date
+            # deal_request.save()
             
             try:
-                send_deal_request_approval_mail("Deal Of The Day request approved",{"first_name":deal_request.vendor.user.first_name,"email":deal_request.vendor.user.email},{"date_start":deal_request.deal_start,"date_end":deal_request.deal_end})
+                send_deal_request_approval_mail("Deal Of The Day request approved",{"first_name":product.vendor.user.first_name,"email":product.vendor.user.email},{"date_start":deal.start_date,"date_end":deal.end_date})
             except Exception as e:
                 print(e)
             
             return Response(
                 {"message":"Successful"},status=status.HTTP_200_OK
             )
+
+class RetrieveRemoveUpdateDOTD(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsSuperuser,)
+    serializer_class = DealOfTheDaySerializer
+    pagination_class = AdminVendorPagination
+    queryset = DealOfTheDay.objects.all()
+    lookup_field = "uid"
+
+    def partial_update(self, request, uid):
+        dotd = get_object_or_404(DealOfTheDay,uid=uid)
+
+        if dotd.is_active:
+            dotd.is_active = False
+        else:
+            deals = DealOfTheDay.objects.filter(is_active=True)
+
+            for deal in deals:
+                deal.is_active = False
+                deal.save()
+
+            dotd.is_active=True
+            dotd.end_date = datetime.now() + timedelta(days=1)
+
+        dotd.save()
+
+        return Response(
+            {"message":"Successful"},status=status.HTTP_200_OK
+        )
+
+
 
 class DeclineDOTDRequest(APIView):
     permission_classes = (IsSuperuser,)
@@ -706,5 +730,10 @@ class RetrieveCustomerOrder(generics.ListAPIView):
 
         serializer = self.serializer_class(orders, many=True, context={'request': request})
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+    
+
+
 
         
