@@ -35,29 +35,33 @@ class Size(models.Model):
 class Category(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
+    avatar = models.ImageField(upload_to="media/Category-Avatar/")
     slug =AutoSlugField(populate_from="name",unique=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ('name',)
         verbose_name = 'category'
-        verbose_name_plural = 'categories'    
+        verbose_name_plural = 'categories'   
+
+    def __str__(self):
+        return self.name
+     
 
 
 class SubCategory(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
     slug =AutoSlugField(populate_from="name",unique=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+    avatar = models.ImageField(upload_to="media/SubCategory-Avatar/")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
     
     class Meta:
         ordering = ('name',)
         verbose_name = 'sub-category'
         verbose_name_plural = 'sub-categories'
 
-    '''
-    def get_absolute_url(self):
-        return reverse('shop_by_category', args=[self.slug])
-    '''
 
     def __str__(self):
         return self.name

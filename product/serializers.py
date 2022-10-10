@@ -8,15 +8,27 @@ from .models import Category, Color, DealOfTheDay, Product, Image, SubCategory, 
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SubCategory
-        fields = ("name","slug")
+        fields = "__all__"
 
-        extra_kwargs = {
-            "slug": {'validators': []},
-            "closed": {"slug": True},
-        }
+class CategoryUpdateSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(required=False)
+    category = serializers.CharField(max_length=255, required=False)
+    class Meta:
+        model = SubCategory
+        fields = "__all__"
+
+class MainCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields="__all__"
+
+class SubCategorySerializer(serializers.ModelSerializer):
+    category = MainCategorySerializer(read_only=True)
+    class Meta:
+        model = SubCategory
+        fields = "__all__"
 
     
 
@@ -25,11 +37,6 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = ("uid","image",)
-
-class MainCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields="__all__"
 
 
 class ProductSerializer2(serializers.ModelSerializer):
@@ -73,7 +80,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     category = MainCategorySerializer(read_only=True)
-    sub_categories = CategorySerializer(many=True, read_only=True)
+    sub_categories = SubCategorySerializer(many=True, read_only=True)
     images = ImageSerializer(many=True, read_only=True)
     # categories = CategorySerializer(many=True, read_only=True)
     uid = serializers.UUIDField(read_only=True)

@@ -5,12 +5,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from vendor.models import Vendor
-from vendor.paginations import AdminVendorPagination
+from vendor.paginations import AdminVendorPagination, CategoryPagination
 from vendor.permissions import IsVendor
 
-from .models import Image, Product, SubCategory, Image, ProductVariation, Review, Size
-from .serializers import (ImageSerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
- ReviewSerializer2, VariantSerializer)
+from .models import Category, Image, Product, SubCategory, Image, ProductVariation, Review, Size
+from .serializers import (ImageSerializer, MainCategorySerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
+ ReviewSerializer2, SubCategorySerializer, VariantSerializer)
 
 
 
@@ -183,8 +183,76 @@ class ProductReviewsVendor(generics.ListAPIView):
         serializer = self.serializer_class(reviews, many=True, context={'request': request})
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+class AllCatgories(generics.ListAPIView):
+    serializer_class = MainCategorySerializer
+    permission_classes =()
+    pagination_class = CategoryPagination
+    queryset = Category.objects.all()
+
+class AllSubCatgories(generics.ListAPIView):
+    serializer_class = SubCategorySerializer
+    permission_classes =()
+    pagination_class = CategoryPagination
+    queryset = SubCategory.objects.all().order_by("name")
 
 
+class CategorySubCategory(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    permission_classes =()
+    pagination_class = CategoryPagination
+    queryset = SubCategory.objects.all()
+
+    def get(self, request, uid):
+        category = get_object_or_404(Category,uid=uid)
+
+        sub_cats = self.queryset.filter(category=category).order_by("name")
+
+        page = self.paginate_queryset(sub_cats)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(sub_cats, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+class CategoryProducts(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes =()
+    # pagination_class
+    queryset = Product.objects.all().order_by("created_at")
+
+    def get(self, request, uid):
+        category = get_object_or_404(Category,uid=uid)
+
+        products = self.queryset.filter(category=category).order_by("created_at")
+
+        page = self.paginate_queryset(products)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(products, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+class SubCategoryProducts(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes =()
+    # pagination_class
+    queryset = Product.objects.all().order_by("created_at")
+
+    def get(self, request, uid):
+        subcategory = get_object_or_404(SubCategory,uid=uid)
+
+        products = self.queryset.filter(sub_categories__in=[subcategory]).order_by("created_at")
+
+        page = self.paginate_queryset(products)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(products, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 # page = self.paginate_queryset(products)

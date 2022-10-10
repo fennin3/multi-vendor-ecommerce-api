@@ -11,8 +11,8 @@ from customer.models import Customer
 from customer.serializers import CustomerSerializer, CustomerSerializer2
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
-from product.models import DealOfTheDay, Product
-from product.serializers import ProductSerializer, ProductSerializer2
+from product.models import Category, DealOfTheDay, Product, SubCategory
+from product.serializers import CategorySerializer, CategoryUpdateSerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SubCategorySerializer
 from transactions.models import PaymentMethods
 from transactions.serializers import PaymentMethodSerializer2
 from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
@@ -296,6 +296,38 @@ class ProductViewSet(ModelViewSet):
         product.is_approved =True
         product.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all().order_by("name")
+    serializer_class = MainCategorySerializer
+    permission_classes = (IsSuperuser,)
+    lookup_field = 'uid'
+    pagination_class = AdminVendorPagination
+
+class SubCategoryViewSet(ModelViewSet):
+    queryset = SubCategory.objects.all().order_by("name")
+    serializer_class = SubCategorySerializer
+    permission_classes = (IsSuperuser,)
+    lookup_field = 'uid'
+    pagination_class = AdminVendorPagination
+
+    def create(self, request):
+        serializer = CategorySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.create(serializer.validated_data)
+
+        return Response(self.serializer_class(data).data,status=status.HTTP_201_CREATED)
+
+    def partial_update(self,request, uid):
+        serializer = CategoryUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        sub_cat = get_object_or_404(SubCategory, uid=uid)
+
+        sub_cat = serializer.update(sub_cat,serializer.validated_data)
+
+        return Response(self.serializer_class(sub_cat).data,status=status.HTTP_200_OK)
 
 class ApproveProduct(APIView):
     permission_classes = (IsSuperuser,)

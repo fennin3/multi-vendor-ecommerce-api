@@ -3,16 +3,18 @@ from django.urls import path, include
 from rest_framework import routers
 
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTDRequests,
- ApproveProduct,  BankDetailsView, CancelledOrders, ConfirmAccount, ConfirmedOrders, CountryView, 
+ ApproveProduct,  BankDetailsView, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeclineDOTDRequest, DeliveredOrders, 
  DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders,
   RetrieveApprovedDealOfTheDayRequests, RetrieveCustomerOrder, RetrievePendingDealOfTheDayRequests, ProcessedOrders, RetrieveUpdateDestroyAdminView, 
-  ReturnedOrders, ShippedOrders, SuspendUnsuspendCustomer, SuspendVendor, UpdateAddress, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
+  ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer, SuspendVendor, UpdateAddress, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
 router = routers.DefaultRouter(trailing_slash=True)
 router.register(r'vendors', VendorViewSet)
 router.register(r'products', ProductViewSet)
+router.register(r'categories', CategoryViewSet)
+router.register(r'subcategories', SubCategoryViewSet)
 router.register(r'zones', CreateListShippingZonesView)
 router.register(r'countries', CountryView)
 router.register(r'customers', CustomerViewSet)
