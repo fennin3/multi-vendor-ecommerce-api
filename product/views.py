@@ -105,9 +105,15 @@ class ListVendorProduct(generics.ListAPIView):
 
 
     def get(self, request, vendor_id=None):
+        status = self.request.query_params.get('approved')
 
         if vendor_id:
-            products = self.queryset.filter(vendor__user__uid=vendor_id)
+            if status == "true":
+                products = self.queryset.filter(vendor__user__uid=vendor_id, is_approved=True)
+            elif status == "false":
+                products = self.queryset.filter(vendor__user__uid=vendor_id, is_approved=False)
+            else:
+                products = self.queryset.filter(vendor__user__uid=vendor_id)
         else:
             products = self.queryset.all()
 
