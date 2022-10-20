@@ -144,6 +144,12 @@ class CountrySerializer3(serializers.ModelSerializer):
         fields="__all__"
 
 
+class FlashSaleRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FlashSale
+        fields="__all__"
+
+
 class AddFlashSaleSerializer(serializers.Serializer):
     product = serializers.UUIDField(required=True)
     end_date = serializers.DateTimeField(required=True,format="%Y-%m-%d %H:%M:%S")

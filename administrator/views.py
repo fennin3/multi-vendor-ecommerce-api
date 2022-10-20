@@ -11,7 +11,7 @@ from customer.models import Customer
 from customer.serializers import CustomerSerializer, CustomerSerializer2
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
-from product.models import Category, DealOfTheDay, FlashSale, Product, SubCategory
+from product.models import Category, DealOfTheDay, FlashSale, FlashSaleRequest, Product, SubCategory
 from product.serializers import CategorySerializer, CategoryUpdateSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SubCategorySerializer
 from transactions.models import PaymentMethods
 from transactions.serializers import PaymentMethodSerializer2
@@ -22,7 +22,7 @@ from rest_framework.generics import ListAPIView
 from .models import Administrator, Country, ShippingFeeZone, SiteAddress, SiteConfiguration
 from .permissions import IsSuperuser
 from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, CountrySerializer2,
-CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer,
+CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum
 
@@ -770,6 +770,10 @@ class AddProductToFlashSales(APIView):
             "message":"successful"
         }, status=status.HTTP_200_OK)
 
+class RetrieveFlashSaleRequest(generics.ListAPIView):
+    permission_classes = (IsSuperuser,)
+    queryset = FlashSaleRequest.objects.all().order_by('-created_at')
+    pagination_class = AdminVendorPagination
+    serializer_class = FlashSaleRequestSerializer
 
 
-        

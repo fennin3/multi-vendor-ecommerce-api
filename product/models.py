@@ -88,7 +88,7 @@ class Product(models.Model):
     discount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     discounted_price = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     description = models.TextField(blank=True, null=False, default="")
-    additional_info = models.TextField(blank=True, null=False, default="")
+    additional_info = models.JSONField(blank=True, null=True)
     thumbnail = models.ImageField(upload_to="media/Products-Avatar/", blank=True, null=True)
     thumbnail_created = models.BooleanField(default=False)
     colors = models.ManyToManyField(Color,default=[])
@@ -176,6 +176,13 @@ class DealOfTheDay(models.Model):
         # ordering = ('name',)
         verbose_name = 'Deal the day'
         verbose_name_plural = 'Deal of the day' 
+
+
+class FlashSaleRequest(models.Model):
+    product = models.UUIDField()
+    days = models.IntegerField(default=1)
+    approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
     
 class FlashSale(models.Model):
     uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
