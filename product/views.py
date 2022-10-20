@@ -23,7 +23,7 @@ class CategoryView(generics.ListCreateAPIView):
     
 class ListAllProducts(generics.ListAPIView):
     permission_classes = ()
-    queryset = Product.objects.all().order_by("-created_at")
+    queryset = Product.objects.filter(is_active=True,is_approved=True, vendor__suspended=False, vendor__closed=False, category__is_active=True, sub_categories__is_active=True).order_by("-created_at")
     serializer_class = ProductSerializer
 
 
@@ -216,13 +216,13 @@ class AllCatgories(generics.ListAPIView):
     serializer_class = MainCategorySerializer
     permission_classes =()
     pagination_class = CategoryPagination
-    queryset = Category.objects.all()
+    queryset = Category.objects.filter(is_active=True).order_by('name')
 
 class AllSubCatgories(generics.ListAPIView):
     serializer_class = SubCategorySerializer
     permission_classes =()
     pagination_class = CategoryPagination
-    queryset = SubCategory.objects.all().order_by("name")
+    queryset = SubCategory.objects.filter(is_active=True).order_by("name")
 
 
 class CategorySubCategory(generics.ListAPIView):
@@ -284,4 +284,5 @@ class SubCategoryProducts(generics.ListAPIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 
+# class Mark
 

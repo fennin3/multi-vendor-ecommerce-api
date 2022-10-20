@@ -7,10 +7,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from product.models import DealOfTheDay
-from product.serializers import DealOfTheDaySerializer
+from product.models import DealOfTheDay, Product
+from product.serializers import DealOfTheDaySerializer, ProductSerializer
 from vendor.models import ConfirmationCode, Vendor
-
+from vendor.paginations import ClientPagination
+from django.db.models import Count
 from .models import Customer
 from .permissions import IsCustomer
 from .serializers import CustomerSerializer, CustomerSerializer2, UserLoginSerializer, ConfirmAccountSerializer
@@ -136,5 +137,24 @@ class RetrieveDealOfTheDay(APIView):
                 "deal":None
             }, status=status.HTTP_200_OK)
 
+class RetrieveFeaturedProducts(generics.ListAPIView):
+    permission_classes=()
+    serializer_class = ProductSerializer
+    pagination_class = ClientPagination
+    queryset = Product.objects.filter(is_active=True,is_approved=True, vendor__suspended=False, vendor__closed=False, featured=True, category__is_active=True, sub_categories__is_active=True).order_by("-created_at")
+    
+class PopularProducts(generics.ListAPIView):
+    permission_classes=()
+    serializer_class = ProductSerializer
+    pagination_class = ClientPagination
+    queryset = Product.objects.filter(product_items__ordered=True).annotate(count=Count("product_items")).filter(is_active=True,is_approved=True, 
+    vendor__suspended=False, vendor__closed=False, 
+    category__is_active=True, sub_categories__is_active=True).order_by("-count")
+    
 
-
+class RecentProducts(generics.ListAPIView):
+    permission_classes=()
+    serializer_class = ProductSerializer
+    pagination_class = ClientPagination
+    queryset = Product.objects.filter(is_active=True,is_approved=True, vendor__suspended=False, vendor__closed=False, category__is_active=True, sub_categories__is_active=True).order_by("-created_at")
+ 

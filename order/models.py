@@ -25,7 +25,7 @@ class OrderItem(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     user = models.ForeignKey(Customer, on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
-    item = models.ForeignKey(Product, on_delete=models.CASCADE)
+    item = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_items")
     size = models.ForeignKey(Size,related_name="size_products", on_delete=models.CASCADE, null=True, blank=True)
     color = models.ForeignKey(Color,related_name="size_products", on_delete=models.CASCADE, null=True, blank=True)
     price = models.DecimalField(max_digits=15,decimal_places=2)

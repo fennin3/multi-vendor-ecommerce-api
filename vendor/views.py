@@ -12,7 +12,7 @@ from administrator.permissions import IsSuperuser
 from order.models import OrderItem
 
 from product.models import Product
-from vendor.paginations import AdminVendorPagination
+from vendor.paginations import AdminVendorPagination, ClientPagination
 
 from .models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
 from .permissions import IsUser, IsVendor
@@ -174,3 +174,8 @@ class CustomUserDetail(generics.UpdateAPIView):
     lookup_field = "uid"        
 
 
+class FeaturedVendors(generics.ListAPIView):
+    permission_classes=(AllowAny,)
+    serializer_class = VendorSerializer
+    pagination_class=ClientPagination
+    queryset = Vendor.objects.filter(suspended=False, closed=False, featured=True)

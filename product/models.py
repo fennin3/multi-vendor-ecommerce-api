@@ -94,6 +94,7 @@ class Product(models.Model):
     colors = models.ManyToManyField(Color,default=[])
     sizes = models.ManyToManyField(Size, default=[])
     tags = models.ManyToManyField(Tag, blank=True, related_name="tag_products")
+    featured = models.BooleanField(default=False)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='vendor')
     is_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
@@ -176,5 +177,9 @@ class DealOfTheDay(models.Model):
         verbose_name = 'Deal the day'
         verbose_name_plural = 'Deal of the day' 
     
-
+class FlashSale(models.Model):
+    uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    product = models.OneToOneField(Product,on_delete=models.CASCADE)
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(blank=False, null=False)
 

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
+from product.models import FlashSale
 from vendor.exceptions import CustomException
 
 from vendor.models import CustomUser
@@ -141,3 +142,11 @@ class CountrySerializer3(serializers.ModelSerializer):
     class Meta:
         model=Country
         fields="__all__"
+
+
+class AddFlashSaleSerializer(serializers.Serializer):
+    product = serializers.UUIDField(required=True)
+    end_date = serializers.DateTimeField(required=True,format="%Y-%m-%d %H:%M:%S")
+    class Meta:
+        model=FlashSale
+        fields=("product","end_date")

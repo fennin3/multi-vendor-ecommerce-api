@@ -1,5 +1,7 @@
 from django.urls import path
 
+from customer.views import PopularProducts, RecentProducts, RetrieveFeaturedProducts
+
 from .views import (AddProductVariant, CreateListProduct, DeleteProductImage,
  ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
   UpdateRetrieveDetroyProduct, VariantStatus)
@@ -7,6 +9,9 @@ from .views import (AddProductVariant, CreateListProduct, DeleteProductImage,
 
 urlpatterns = [
     path('', ListAllProducts.as_view(), name='list_products'),
+    path('featured/', RetrieveFeaturedProducts.as_view(), name="list_featured"),
+    path('popular/', PopularProducts.as_view(), name="list_popular"),
+    path('recent/', RecentProducts.as_view(), name="list_recent"),
     path('create/', CreateListProduct.as_view(), name='create_list_products'),
     path('add-variant/', AddProductVariant.as_view(), name="add_variant"),
     path('variants/<uid>/', UpdateRetrieveDestroyProductVariant.as_view(), name="add_variant"),
@@ -18,4 +23,5 @@ urlpatterns = [
     path('image-delete/<uid>/', DeleteProductImage.as_view(), name='delete_image'),
     path('categories/', CategoryView.as_view(), name='categories'),
     path('update-status/<uid>/', UpdateProductStatus.as_view(), name="update_prod_status"),
+
 ]

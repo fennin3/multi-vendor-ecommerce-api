@@ -11,5 +11,5 @@ urlpatterns = [
     path('profile/update/', CustomerProfileUpdate.as_view(), name='customer_dashboard'),
     path('confirm-account/', ConfirmAccount.as_view(), name='confirm_account'),
     path('signin/', CustomerLogin.as_view(), name='sign_in'),
-    path('deal/', RetrieveDealOfTheDay.as_view(), name='deal')
+    path('deal/', RetrieveDealOfTheDay.as_view(), name='deal'),
 ]

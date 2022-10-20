@@ -11,7 +11,7 @@ from customer.models import Customer
 from customer.serializers import CustomerSerializer, CustomerSerializer2
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
-from product.models import Category, DealOfTheDay, Product, SubCategory
+from product.models import Category, DealOfTheDay, FlashSale, Product, SubCategory
 from product.serializers import CategorySerializer, CategoryUpdateSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SubCategorySerializer
 from transactions.models import PaymentMethods
 from transactions.serializers import PaymentMethodSerializer2
@@ -21,7 +21,7 @@ from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSeri
 from rest_framework.generics import ListAPIView
 from .models import Administrator, Country, ShippingFeeZone, SiteAddress, SiteConfiguration
 from .permissions import IsSuperuser
-from .serializers import (AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, CountrySerializer2,
+from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, CountrySerializer2,
 CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum
@@ -731,8 +731,44 @@ class RetrieveCustomerOrder(generics.ListAPIView):
         serializer = self.serializer_class(orders, many=True, context={'request': request})
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+class UpdateFeatured(APIView):
+    permission_classes = (IsSuperuser,)
 
-    
+    def post(self, request, uid):
+        product = get_object_or_404(Product,uid=uid)
+
+        product.featured = not product.featured
+
+        product.save()
+
+        return Response({"message":"Successful"}, status=status.HTTP_200_OK) 
+
+
+class AddProductToFlashSales(APIView):
+    permission_classes=(IsSuperuser,)
+    serializer_class = AddFlashSaleSerializer
+
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        product = get_object_or_404(Product,uid=serializer.data['product'])
+
+        flashsale = FlashSale.objects.filter(product=product)
+
+        if flashsale.exists():
+            sale = flashsale[0]
+            sale.end_date = serializer.data['end_date']
+            sale.start_date = datetime.now()
+            sale.save()
+        else:
+            FlashSale.objects.create(
+                product = product,
+                end_date = serializer.data['end_date']
+            )
+        return Response({
+            "message":"successful"
+        }, status=status.HTTP_200_OK)
 
 
 

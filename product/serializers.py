@@ -88,10 +88,11 @@ class ProductSerializer(serializers.ModelSerializer):
     sizes = SizeSerializer(read_only=True, many=True)
     variants = VariantSerializer(read_only=True, many=True)
     reviews = ReviewSerializer(read_only=True, many=True)
+    vendor = VendorSerializer(read_only=True)
     
     class Meta:
         model = Product
-        fields = ("uid", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail","sizes", "colors", "variants", "is_active", "is_approved", "reviews","created_at", "updated_at")
+        fields = ("uid", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail", "vendor","sizes", "colors", "variants", "is_active", "is_approved", "reviews","created_at", "updated_at")
 
 
 class ProductSerializer3(serializers.ModelSerializer):

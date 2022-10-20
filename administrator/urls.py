@@ -2,12 +2,12 @@ from django.urls import path
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTD,
+from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddProductToFlashSales, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTD,
  ApproveProduct,  BankDetailsView, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeclineDOTDRequest, DeliveredOrders, 
  DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders,
   RetrieveApprovedDealOfTheDayRequests, RetrieveCustomerOrder, RetrievePendingDealOfTheDayRequests, ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
-  ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer, SuspendVendor, UpdateAddress, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
+  ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer, SuspendVendor, UpdateAddress, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
 router = routers.DefaultRouter(trailing_slash=True)
@@ -25,6 +25,11 @@ urlpatterns = [
     path('', ListandCreateAdmin.as_view(), name='list_and_create_admin'),
     path('signin/', AdminLogin.as_view(), name='admin_login'),
     path('orders/', AllOrders.as_view(), name='orders'),
+
+
+    path('products/<uid>/featured/', UpdateFeatured.as_view(), name='orders'),
+
+    path('add-flashsale/', AddProductToFlashSales.as_view(), name='add_flash_sale'),
 
     path('orders/placed_orders/', OrderedOrders.as_view(), name='new_orders'),
     path('orders/processed_orders/', ProcessedOrders.as_view(), name='processed_orders'),

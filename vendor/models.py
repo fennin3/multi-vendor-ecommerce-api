@@ -77,7 +77,7 @@ class Vendor(models.Model):
     )
     pending_balance = models.DecimalField(default=0.00, decimal_places=2, max_digits=15)
     balance = models.DecimalField(default=0.00, decimal_places=2, max_digits=15)
-    # withdrawal_amount = models.DecimalField(default=0.00, decimal_places=2, max_digits=15)
+    featured = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     suspended = models.BooleanField(default=False)
     banner = models.ImageField(upload_to="media/Shop-Banners/", default='vendor-avatar.default.png')
