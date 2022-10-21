@@ -7,11 +7,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from administrator.permissions import IsSuperuser
+from administrator.serializers import FlashSaleRequestSerializer2
 
 # from administrator.permissions import IsSuperuser
 from order.models import OrderItem
 
-from product.models import Product
+from product.models import FlashSaleRequest, Product
 from vendor.paginations import AdminVendorPagination, ClientPagination
 
 from .models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
@@ -179,3 +180,22 @@ class FeaturedVendors(generics.ListAPIView):
     serializer_class = VendorSerializer
     pagination_class=ClientPagination
     queryset = Vendor.objects.filter(suspended=False, closed=False, featured=True)
+
+
+class ListCreateFlashRequest(generics.ListCreateAPIView):
+    permission_classes = (IsVendor,)
+    serializer_class = FlashSaleRequestSerializer2
+    pagination_class=ClientPagination
+    queryset = FlashSaleRequest.objects.all()
+
+    def get(self, request):
+        flash_sales = self.queryset.filter(product__vendor__user=request.user)
+
+        page = self.paginate_queryset(flash_sales)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(flash_sales, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+

@@ -6,7 +6,7 @@ from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddProductToFlashS
  ApproveProduct,  BankDetailsView, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeclineDOTDRequest, DeliveredOrders, 
  DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders,
-  RetrieveApprovedDealOfTheDayRequests, RetrieveCustomerOrder, RetrievePendingDealOfTheDayRequests, ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
+  RetrieveApprovedDealOfTheDayRequests, RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrievePendingDealOfTheDayRequests, ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
   ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer, SuspendVendor, UpdateAddress, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
@@ -29,7 +29,7 @@ urlpatterns = [
 
     path('products/<uid>/featured/', UpdateFeatured.as_view(), name='orders'),
 
-    path('add-flashsale/', AddProductToFlashSales.as_view(), name='add_flash_sale'),
+    path('flash-requests/', RetrieveFlashSaleRequest.as_view(), name='list_flash_requests'),
 
     path('orders/placed_orders/', OrderedOrders.as_view(), name='new_orders'),
     path('orders/processed_orders/', ProcessedOrders.as_view(), name='processed_orders'),

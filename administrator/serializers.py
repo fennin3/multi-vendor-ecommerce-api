@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
-from product.models import FlashSale
+from product.models import FlashSale, FlashSaleRequest
 from vendor.exceptions import CustomException
 
 from vendor.models import CustomUser
@@ -146,8 +146,17 @@ class CountrySerializer3(serializers.ModelSerializer):
 
 class FlashSaleRequestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FlashSale
+        model = FlashSaleRequest
         fields="__all__"
+
+class FlashSaleRequestSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = FlashSaleRequest
+        fields="__all__"
+
+        extra_kwargs = {
+            "is_approved":{"read_only":True}
+        }
 
 
 class AddFlashSaleSerializer(serializers.Serializer):

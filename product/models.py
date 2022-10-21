@@ -179,9 +179,10 @@ class DealOfTheDay(models.Model):
 
 
 class FlashSaleRequest(models.Model):
-    product = models.UUIDField()
+    uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="flash_sales")
     days = models.IntegerField(default=1)
-    approved = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
 class FlashSale(models.Model):

@@ -156,5 +156,12 @@ class RecentProducts(generics.ListAPIView):
     permission_classes=()
     serializer_class = ProductSerializer
     pagination_class = ClientPagination
-    queryset = Product.objects.filter(is_active=True,is_approved=True, vendor__suspended=False, vendor__closed=False, category__is_active=True, sub_categories__is_active=True).order_by("-created_at")
+    
+    queryset = Product.objects.filter(
+        is_active=True,
+        is_approved=True, 
+        vendor__suspended=False, 
+        vendor__closed=False, 
+        category__is_active=True, 
+        sub_categories__is_active=True).order_by("-created_at")
  
