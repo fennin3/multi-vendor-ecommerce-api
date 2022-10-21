@@ -82,6 +82,20 @@ class SiteConfiguration(SingletonModel):
         verbose_name = "Site Configuration"
 
 
+class Banner(models.Model):
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=1000)
+    header = models.CharField(max_length=1000)
+    sub_header = models.CharField(max_length=1000)
+    image = models.ImageField(upload_to="media/Banners/")
+    btn_link = models.CharField(max_length=1000)
+    btn_text = models.CharField(max_length=1000)
+    btn_color = models.CharField(max_length=255)
+    btn_text_color = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 
     

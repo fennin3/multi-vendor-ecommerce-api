@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework import routers
 
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
- ApproveProduct,  BankDetailsView, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
+ ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
  DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
  RetrieveCustomerOrder, RetrieveFlashSaleRequest,ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
@@ -19,6 +19,7 @@ router.register(r'subcategories', SubCategoryViewSet)
 router.register(r'zones', CreateListShippingZonesView)
 router.register(r'countries', CountryView)
 router.register(r'customers', CustomerViewSet)
+router.register(r'banners', BannerViewSets)
 
 
 
@@ -26,6 +27,7 @@ urlpatterns = [
     path('', ListandCreateAdmin.as_view(), name='list_and_create_admin'),
     path('signin/', AdminLogin.as_view(), name='admin_login'),
     path('orders/', AllOrders.as_view(), name='orders'),
+    path('banners/<uid>/status/', BannerStatus.as_view(), name='banner_status'),
 
 
     path('products/<uid>/featured/', UpdateFeatured.as_view(), name='orders'),

@@ -19,9 +19,9 @@ from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Ven
 from vendor.paginations import AdminVendorPagination
 from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSerializer, VendorSerializer
 from rest_framework.generics import ListAPIView
-from .models import Administrator, Country, ShippingFeeZone, SiteAddress, SiteConfiguration
+from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration
 from .permissions import IsSuperuser
-from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, CountrySerializer2,
+from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, BannerSerializer, CountrySerializer2,
 CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum
@@ -808,3 +808,28 @@ class ApproveFlashSaleRequest(APIView):
                 "message":"Successful"
             },status=status.HTTP_200_OK
         )
+
+
+class BannerViewSets(ModelViewSet):
+    serializer_class = BannerSerializer
+    permission_classes = (IsSuperuser,)
+    queryset = Banner.objects.all()
+    pagination_class = AdminVendorPagination
+    lookup_field = "uid"
+
+class BannerStatus(APIView):
+    permission_classes = (IsSuperuser,)
+
+    def post(self, request, uid):
+        banner = get_object_or_404(Banner, uid=uid)
+
+        banner.is_active = not banner.is_active
+
+        banner.save()
+
+        return Response({
+            "message":"Successful"
+        }, status=status.HTTP_200_OK)
+
+
+

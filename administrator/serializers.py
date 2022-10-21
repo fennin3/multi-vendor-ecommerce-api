@@ -9,7 +9,7 @@ from vendor.models import CustomUser
 from vendor.serializers import UserSerializer
 from vendor.tasks import send_confirmation_mail
 
-from .models import Administrator, SiteConfiguration, SiteAddress, ShippingFeeZone, Country
+from .models import Administrator, Banner, SiteConfiguration, SiteAddress, ShippingFeeZone, Country
 
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
@@ -165,3 +165,19 @@ class AddFlashSaleSerializer(serializers.Serializer):
     class Meta:
         model=FlashSale
         fields=("product","end_date")
+
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Banner
+        fields="__all__"
+
+class BannerSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model=Banner
+        fields="__all__"
+
+    extra_kwargs ={
+        "is_active":{"read_ony":True}
+    }
+
+
