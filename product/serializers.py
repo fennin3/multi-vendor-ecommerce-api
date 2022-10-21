@@ -4,7 +4,7 @@ from rest_framework import serializers
 from vendor.models import Vendor
 from vendor.serializers import UserSerializer, VendorSerializer
 
-from .models import Category, Color, DealOfTheDay, Product, Image, SubCategory, ProductVariation, Review, Size
+from .models import Category, Color, DealOfTheDay, FlashSale, Product, Image, SubCategory, ProductVariation, Review, Size
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -124,7 +124,11 @@ class DealOfTheDaySerializer(serializers.ModelSerializer):
         fields="__all__"
 
 
-
+class FlashSaleSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    class Meta:
+        model = FlashSale
+        fields="__all__"
         
 
 

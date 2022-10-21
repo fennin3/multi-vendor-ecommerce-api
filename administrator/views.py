@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from administrator.tasks import send_deal_request_approval_mail
+from administrator.tasks import send_deal_request_approval_mail, send_flashsale_approval_mail
 from administrator.utils import STATUS
 from customer.models import Customer
 from customer.serializers import CustomerSerializer, CustomerSerializer2
@@ -777,3 +777,34 @@ class RetrieveFlashSaleRequest(generics.ListAPIView):
     serializer_class = FlashSaleRequestSerializer
 
 
+class UpdateDeleteRetrieveFlashSaleRequest(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsSuperuser,)
+    queryset = FlashSaleRequest.objects.all().order_by('-created_at')
+    pagination_class = AdminVendorPagination
+    serializer_class = FlashSaleRequestSerializer
+    lookup_field = "uid"
+
+class ApproveFlashSaleRequest(APIView):
+    permission_classes = (IsSuperuser,)
+    queryset = FlashSaleRequest.objects.all()
+    serializer_class = FlashSaleRequestSerializer
+
+    def post(self, request, uid):
+        sale_request = get_object_or_404(FlashSaleRequest,uid=uid)
+
+        sale_request.is_approved = not sale_request.is_approved
+
+        sale_request.save()
+        end_date = datetime.now() + timedelta(days=float(str(sale_request.days)))
+
+        flash_sale = FlashSale.objects.create(
+         product = sale_request.product,
+         end_date = end_date
+        )
+        send_flashsale_approval_mail("FlashSale request approved",{"first_name":sale_request.product.vendor.user.first_name,"email":sale_request.product.vendor.user.email},{"date_start":flash_sale.start_date,"date_end":flash_sale.end_date})
+
+        return Response(
+            {
+                "message":"Successful"
+            },status=status.HTTP_200_OK
+        )

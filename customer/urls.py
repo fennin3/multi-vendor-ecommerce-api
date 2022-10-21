@@ -1,5 +1,7 @@
 from django.urls import path
 
+from product.views import RetrieveFlashSale
+
 from .views import ConfirmAccount, CustomerLogin, CustomerProfileUpdate, RetrieveDealOfTheDay
 
 from .views import CreateCustomer, CustomerProfile
@@ -12,4 +14,5 @@ urlpatterns = [
     path('confirm-account/', ConfirmAccount.as_view(), name='confirm_account'),
     path('signin/', CustomerLogin.as_view(), name='sign_in'),
     path('deal/', RetrieveDealOfTheDay.as_view(), name='deal'),
+    path('flashsales/', RetrieveFlashSale.as_view(), name="flash_sale"),
 ]

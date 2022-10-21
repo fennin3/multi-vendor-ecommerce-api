@@ -2,12 +2,13 @@ from django.urls import path
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddProductToFlashSales, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTD,
+from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
  ApproveProduct,  BankDetailsView, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
- CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeclineDOTDRequest, DeliveredOrders, 
- DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders,
-  RetrieveApprovedDealOfTheDayRequests, RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrievePendingDealOfTheDayRequests, ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
-  ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer, SuspendVendor, UpdateAddress, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
+ CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
+ DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
+ RetrieveCustomerOrder, RetrieveFlashSaleRequest,ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
+  ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer,\
+     SuspendVendor, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
 router = routers.DefaultRouter(trailing_slash=True)
@@ -30,6 +31,9 @@ urlpatterns = [
     path('products/<uid>/featured/', UpdateFeatured.as_view(), name='orders'),
 
     path('flash-requests/', RetrieveFlashSaleRequest.as_view(), name='list_flash_requests'),
+    path('flash-requests/<uid>/status/', ApproveFlashSaleRequest.as_view(), name='status_flash_requests'),
+
+    path('flash-requests/<uid>/', UpdateDeleteRetrieveFlashSaleRequest.as_view(), name='update_flash_requests'),
 
     path('orders/placed_orders/', OrderedOrders.as_view(), name='new_orders'),
     path('orders/processed_orders/', ProcessedOrders.as_view(), name='processed_orders'),

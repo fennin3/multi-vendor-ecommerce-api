@@ -79,6 +79,7 @@ class Product(models.Model):
     )
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=200)
+    # sku =
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     sub_categories = models.ManyToManyField(SubCategory, related_name='sub_products')
     slug = AutoSlugField(populate_from="name")
@@ -187,7 +188,7 @@ class FlashSaleRequest(models.Model):
     
 class FlashSale(models.Model):
     uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    product = models.OneToOneField(Product,on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(blank=False, null=False)
 

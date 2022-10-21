@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render, get_object_or_404
 
 from rest_framework.permissions import AllowAny
@@ -10,8 +11,8 @@ from vendor.models import Vendor
 from vendor.paginations import AdminVendorPagination, CategoryPagination
 from vendor.permissions import IsVendor
 
-from .models import Category, Image, Product, SubCategory, Image, ProductVariation, Review, Size
-from .serializers import (ImageSerializer, MainCategorySerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
+from .models import Category, FlashSale, Image, Product, SubCategory, Image, ProductVariation, Review, Size
+from .serializers import (FlashSaleSerializer, ImageSerializer, MainCategorySerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
  ReviewSerializer2, SubCategorySerializer, VariantSerializer)
 
 
@@ -290,5 +291,10 @@ class SubCategoryProducts(generics.ListAPIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 
-# class Mark
+class RetrieveFlashSale(generics.ListAPIView):
+    permission_classes=(AllowAny,)
+    serializer_class = FlashSaleSerializer
+    queryset = FlashSale.objects.filter(end_date__gte=datetime.now())
+
+
 

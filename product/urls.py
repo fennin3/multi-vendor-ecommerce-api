@@ -3,7 +3,7 @@ from django.urls import path
 from customer.views import PopularProducts, RecentProducts, RetrieveFeaturedProducts
 
 from .views import (AddProductVariant, CreateListProduct, DeleteProductImage,
- ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
+ ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, RetrieveFlashSale, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
   UpdateRetrieveDetroyProduct, VariantStatus)
 
 
