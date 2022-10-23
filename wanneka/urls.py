@@ -4,8 +4,8 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
-from administrator.views import ListCountries, GetSiteInfo,UpdateSiteInfo
-from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, SubCategoryProducts
+from administrator.views import ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
+from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
 from vendor.views import CustomUserDetail
 
 urlpatterns = [
@@ -30,9 +30,14 @@ urlpatterns = [
     # Category
     path("category/<uid>/subcategories/", CategorySubCategory.as_view(), name="cat_subcat"),
     path("categories/", AllCatgories.as_view(), name="all_cats"),
+    path("categories/<uid>/", RetrieveCategoryDetail.as_view(), name="cat_detail"),
     path("subcategories/", AllSubCatgories.as_view(), name="all_subcats"),
+    path("subcategories/<uid>/", RetrieveSubCatgoryDetail.as_view(), name="subcat_detail"),
     path("category/<uid>/products/", CategoryProducts.as_view(), name="cat_prods"),
     path("subcategory/<uid>/products/", SubCategoryProducts.as_view(), name="cat_prods"),
+
+    path("privacy-policy/", PrivacyPolicy.as_view(), name="privacy_policy"),
+    path("terms-conditions/", TermsNConditions.as_view(), name="terms"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

@@ -25,7 +25,7 @@ from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializ
 CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum
-
+from rest_framework.renderers import TemplateHTMLRenderer
 
 
 class ListandCreateAdmin(generics.ListCreateAPIView):
@@ -832,4 +832,19 @@ class BannerStatus(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class PrivacyPolicy(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'privacy_policy.html'
+    permission_classes = ()
+
+    def get(self, request):
+        return Response(template_name=self.template_name)
+
+class TermsNConditions(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'terms.html'
+    permission_classes = ()
+
+    def get(self, request):
+        return Response(template_name=self.template_name)
 

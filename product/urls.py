@@ -3,7 +3,7 @@ from django.urls import path
 from customer.views import PopularProducts, RecentProducts, RetrieveFeaturedProducts
 
 from .views import (AddProductVariant, CreateListProduct, DeleteProductImage,
- ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, RetrieveFlashSale, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
+ ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, RetrieveCategoryDetail, RetrieveFlashSale, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
   UpdateRetrieveDetroyProduct, VariantStatus)
 
 
@@ -22,6 +22,7 @@ urlpatterns = [
     path('<uid>/image/', ImageUploadView.as_view(), name='upload_image'),
     path('image-delete/<uid>/', DeleteProductImage.as_view(), name='delete_image'),
     path('categories/', CategoryView.as_view(), name='categories'),
+    # path('categories/<uid>', RetrieveCategoryDetail.as_view(), name='categories_details'),
     path('update-status/<uid>/', UpdateProductStatus.as_view(), name="update_prod_status"),
 
 ]

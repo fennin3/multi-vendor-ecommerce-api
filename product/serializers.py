@@ -92,7 +92,7 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("uid", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail", "vendor","sizes", "colors", "variants", "is_active", "is_approved", "reviews","created_at", "updated_at")
+        fields = ("uid","sku", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail", "vendor","sizes", "colors", "variants", "is_active", "is_approved", "reviews","created_at", "updated_at")
 
 
 class ProductSerializer3(serializers.ModelSerializer):

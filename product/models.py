@@ -1,5 +1,3 @@
-from email.policy import default
-from enum import unique
 import uuid
 from django.db import models
 from autoslug import AutoSlugField
@@ -11,6 +9,7 @@ from PIL import Image as IMG
 from django.core.files import File
 
 from django.db import models
+from product.utils import generate_sku
 
 
 User = get_user_model()
@@ -79,7 +78,7 @@ class Product(models.Model):
     )
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=200)
-    # sku =
+    sku = models.CharField(max_length=10, default=generate_sku)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     sub_categories = models.ManyToManyField(SubCategory, related_name='sub_products')
     slug = AutoSlugField(populate_from="name")

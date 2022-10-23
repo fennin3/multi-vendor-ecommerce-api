@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from vendor.models import Vendor
 from vendor.paginations import AdminVendorPagination, CategoryPagination
-from vendor.permissions import IsVendor
+from vendor.permissions import IsVendor, IsVendor2
 
 from .models import Category, FlashSale, Image, Product, SubCategory, Image, ProductVariation, Review, Size
 from .serializers import (FlashSaleSerializer, ImageSerializer, MainCategorySerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
@@ -127,10 +127,11 @@ class ListVendorProduct(generics.ListAPIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 class UpdateRetrieveDetroyProduct(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsVendor,)
+    permission_classes = (IsVendor2,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "uid"
+    
 
 class UpdateProductStatus(APIView):
     permission_classes = (IsVendor,)
@@ -297,4 +298,15 @@ class RetrieveFlashSale(generics.ListAPIView):
     queryset = FlashSale.objects.filter(end_date__gte=datetime.now())
 
 
+class RetrieveCategoryDetail(generics.RetrieveAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = MainCategorySerializer
+    queryset = Category.objects.all()
+    lookup_field = "uid"
 
+
+class RetrieveSubCatgoryDetail(generics.RetrieveAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = SubCategorySerializer
+    queryset = SubCategory.objects.all()
+    lookup_field = "uid"
