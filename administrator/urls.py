@@ -5,10 +5,10 @@ from rest_framework import routers
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
  ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
- DisapproveProduct, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
+ DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
  RetrieveCustomerOrder, RetrieveFlashSaleRequest,ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
   ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer,\
-     SuspendVendor, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
+     SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
 router = routers.DefaultRouter(trailing_slash=True)
@@ -20,6 +20,7 @@ router.register(r'zones', CreateListShippingZonesView)
 router.register(r'countries', CountryView)
 router.register(r'customers', CustomerViewSet)
 router.register(r'banners', BannerViewSets)
+router.register(r'testimonials', TestimonialViewSet)
 
 
 
@@ -27,6 +28,10 @@ urlpatterns = [
     path('', ListandCreateAdmin.as_view(), name='list_and_create_admin'),
     path('signin/', AdminLogin.as_view(), name='admin_login'),
     path('orders/', AllOrders.as_view(), name='orders'),
+
+    path('contact-messages/', ListContactMessages.as_view(), name='contact_messages'),
+
+
     path('banners/<uid>/status/', BannerStatus.as_view(), name='banner_status'),
 
 

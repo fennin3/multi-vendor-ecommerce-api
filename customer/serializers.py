@@ -1,3 +1,5 @@
+from administrator.models import Testimonial
+from product.serializers import ProductSerializer
 from vendor.exceptions import CustomException
 from vendor.models import ConfirmationCode, CustomUser
 from vendor.tasks import send_confirmation_mail
@@ -15,7 +17,7 @@ from django.contrib.auth.models import update_last_login
 
 from vendor.utils import gen_confirmation_code
 
-from .models import Customer
+from .models import ContactMessage, Customer, WishItem
 
 
 User = get_user_model()
@@ -104,4 +106,26 @@ class UserLoginSerializer(serializers.Serializer):
             'token': jwt_token
         }
 
-    
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ContactMessage
+        fields="__all__"
+
+
+class TestimonialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Testimonial
+        fields="__all__"
+
+class WishItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=WishItem
+        fields="__all__" 
+
+
+class WishItemSerializer2(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    class Meta:
+        model=WishItem
+        fields="__all__" 
+

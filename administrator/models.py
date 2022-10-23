@@ -97,5 +97,14 @@ class Banner(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+class Testimonial(models.Model):
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    full_name = models.CharField(max_length=1000)
+    caption = models.CharField(max_length=1000)
+    body = models.TextField()
+    avatar = models.ImageField(upload_to="media/Testimonial/")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
     

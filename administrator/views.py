@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from administrator.tasks import send_deal_request_approval_mail, send_flashsale_approval_mail
 from administrator.utils import STATUS
-from customer.models import Customer
-from customer.serializers import CustomerSerializer, CustomerSerializer2
+from customer.models import ContactMessage, Customer
+from customer.serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, TestimonialSerializer
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
 from product.models import Category, DealOfTheDay, FlashSale, FlashSaleRequest, Product, SubCategory
@@ -19,7 +19,7 @@ from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Ven
 from vendor.paginations import AdminVendorPagination
 from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSerializer, VendorSerializer
 from rest_framework.generics import ListAPIView
-from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration
+from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, Testimonial
 from .permissions import IsSuperuser
 from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, BannerSerializer, CountrySerializer2,
 CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer,
@@ -847,4 +847,19 @@ class TermsNConditions(APIView):
 
     def get(self, request):
         return Response(template_name=self.template_name)
+
+
+class ListContactMessages(generics.ListAPIView):
+    permission_classes=(IsSuperuser,)
+    serializer_class = ContactMessageSerializer
+    queryset = ContactMessage.objects.all()
+    pagination_class = AdminVendorPagination
+
+
+class TestimonialViewSet(ModelViewSet):
+    queryset = Testimonial.objects.all()
+    permission_classes = (IsSuperuser,)
+    serializer_class = TestimonialSerializer
+    pagination_class = AdminVendorPagination
+
 

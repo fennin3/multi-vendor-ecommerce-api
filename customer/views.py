@@ -7,16 +7,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from administrator.models import Banner
+from administrator.models import Banner, Testimonial
 from administrator.serializers import BannerSerializer2
 from product.models import DealOfTheDay, Product, SubCategory
 from product.serializers import CategorySerializer, DealOfTheDaySerializer, ProductSerializer
 from vendor.models import ConfirmationCode, Vendor
 from vendor.paginations import ClientPagination
 from django.db.models import Count
-from .models import Customer
+from .models import ContactMessage, Customer, WishItem
 from .permissions import IsCustomer
-from .serializers import CustomerSerializer, CustomerSerializer2, UserLoginSerializer, ConfirmAccountSerializer
+from .serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, TestimonialSerializer, UserLoginSerializer, ConfirmAccountSerializer, WishItemSerializer, WishItemSerializer2
 from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ModelViewSet
 
@@ -191,3 +191,40 @@ class RetrieveAllBanners(APIView):
                 "banners":serializer.data
             }, status=status.HTTP_200_OK
         )
+
+
+class ContactMessageView(generics.CreateAPIView):
+    permission_classes = ()
+    serializer_class = ContactMessageSerializer
+    queryset = ContactMessage.objects.all()
+
+
+class ListTestimonials(generics.ListAPIView):
+    permission_classes =()
+    serializer_class = TestimonialSerializer
+    queryset = Testimonial.objects.all()
+    pagination_class = ClientPagination
+
+class WishListViews(generics.ListCreateAPIView):
+    permission_classes = (IsCustomer,)
+    serializer_class = WishItemSerializer
+    queryset = WishItem.objects.all()
+
+    def get(self, request):
+        wishitems = self.queryset.filter(user=request.user)
+
+        page = self.paginate_queryset(wishitems)
+        if page is not None:
+            serializer = WishItemSerializer2(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = WishItemSerializer2(wishitems, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+class WishListRetrieveDeleteViews(generics.RetrieveDestroyAPIView):
+    permission_classes = (IsCustomer,)
+    serializer_class = WishItemSerializer
+    queryset = WishItem.objects.all()
+    lookup_field = "uid"
+
+

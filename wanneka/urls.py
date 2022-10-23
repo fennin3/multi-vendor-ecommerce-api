@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from administrator.views import ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
+from customer.views import ContactMessageView, ListTestimonials
 from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
 from vendor.views import CustomUserDetail
 
@@ -38,6 +39,10 @@ urlpatterns = [
 
     path("privacy-policy/", PrivacyPolicy.as_view(), name="privacy_policy"),
     path("terms-conditions/", TermsNConditions.as_view(), name="terms"),
+
+    path("contact-us/", ContactMessageView.as_view(), name="contact_us"),
+
+    path("testimonials/", ListTestimonials.as_view(), name="testimonials"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
