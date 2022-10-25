@@ -6,7 +6,7 @@ from django.conf import settings
 
 from administrator.views import ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
 from customer.views import ContactMessageView, ListTestimonials, SubscribeNewsLetter, VerifyNewsLetterEmail
-from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
+from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, ListColors, ListSizes, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
 from vendor.views import CustomUserDetail
 
 urlpatterns = [
@@ -43,6 +43,9 @@ urlpatterns = [
     path("contact-us/", ContactMessageView.as_view(), name="contact_us"),
 
     path("testimonials/", ListTestimonials.as_view(), name="testimonials"),
+
+    path("colors/", ListColors.as_view(), name="colors"),
+    path("sizes/", ListSizes.as_view(), name="sizes"),
 
     path("newsletter/subscribe/", SubscribeNewsLetter.as_view(), name="subscribe"),
     path("newsletter/verify/<ciphertext>/", VerifyNewsLetterEmail.as_view(), name="subscriber_verify"),

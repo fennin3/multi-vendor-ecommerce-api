@@ -213,10 +213,12 @@ CORS_ORIGIN_ALLOW_ALL = True # If this is used then `CORS_ORIGIN_WHITELIST` will
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     '*',
-] # If this is used, then not need to use `CORS_ORIGIN_ALLOW_ALL = True`
+] # If this is used, then not need to use 
+
 CORS_ORIGIN_REGEX_WHITELIST = [
     "*"
 ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 CORS_ALLOWED_ORIGINS = ["https://*", "http://*"]

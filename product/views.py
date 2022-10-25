@@ -9,12 +9,12 @@ from rest_framework.views import APIView
 from product.filters import ProductFilter
 
 from vendor.models import Vendor
-from vendor.paginations import AdminVendorPagination, CategoryPagination, ClientPagination
+from vendor.paginations import AdminVendorPagination, CategoryPagination, ClientPagination, CustomPagination
 from vendor.permissions import IsVendor, IsVendor2
 
-from .models import Category, FlashSale, Image, Product, SubCategory, Image, ProductVariation, Review, Size
-from .serializers import (FlashSaleSerializer, ImageSerializer, MainCategorySerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
- ReviewSerializer2, SubCategorySerializer, VariantSerializer)
+from .models import Category, Color, FlashSale, Image, Product, SubCategory, Image, ProductVariation, Review, Size
+from .serializers import (ColorSerializer, FlashSaleSerializer, ImageSerializer, MainCategorySerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
+ ReviewSerializer2, SizeSerializer, SubCategorySerializer, VariantSerializer)
 
 from django_filters import rest_framework as filters
 
@@ -321,4 +321,17 @@ class SearchFilterView(generics.ListAPIView):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ProductFilter
     queryset =  Product.objects.filter(is_active=True,is_approved=True, vendor__suspended=False, vendor__closed=False, category__is_active=True, sub_categories__is_active=True).order_by("-created_at")
+
+
+class ListColors(generics.ListAPIView):
+    serializer_class = ColorSerializer
+    queryset = Color.objects.all()
+    permission_classes=(AllowAny,)
+    pagination_class = CustomPagination
+
+class ListSizes(generics.ListAPIView):
+    serializer_class = SizeSerializer
+    queryset = Size.objects.all()
+    permission_classes=(AllowAny,)
+    pagination_class = CustomPagination
 
