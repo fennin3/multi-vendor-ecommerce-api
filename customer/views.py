@@ -9,16 +9,19 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from administrator.models import Banner, Testimonial
 from administrator.serializers import BannerSerializer2
-from product.models import DealOfTheDay, Product, SubCategory
+from administrator.tasks import send_confirmation_mail, send_newletter_verify
+from product.models import Category, DealOfTheDay, Product, SubCategory
 from product.serializers import CategorySerializer, DealOfTheDaySerializer, ProductSerializer
 from vendor.models import ConfirmationCode, Vendor
 from vendor.paginations import ClientPagination
 from django.db.models import Count
-from .models import ContactMessage, Customer, WishItem
+from .models import ContactMessage, Customer, NewsLetterSubscriber, WishItem
 from .permissions import IsCustomer
-from .serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, TestimonialSerializer, UserLoginSerializer, ConfirmAccountSerializer, WishItemSerializer, WishItemSerializer2
+from .serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, SubscriberSerializer, TestimonialSerializer, UserLoginSerializer, ConfirmAccountSerializer, WishItemSerializer, WishItemSerializer2
 from django.contrib.auth import get_user_model
-from rest_framework.viewsets import ModelViewSet
+from django.core.signing import Signer
+
+
 
 User = get_user_model()
 
@@ -226,5 +229,62 @@ class WishListRetrieveDeleteViews(generics.RetrieveDestroyAPIView):
     serializer_class = WishItemSerializer
     queryset = WishItem.objects.all()
     lookup_field = "uid"
+
+class RelatedProductsView(generics.ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = ProductSerializer
+    queryset = Product.objects.prefetch_related('sub_categories').all()
+
+
+    def get(self, request, uid):
+        product = get_object_or_404(self.queryset, uid = uid)
+        print(product)
+        related_products = self.queryset.filter(sub_categories__in=product.sub_categories.all())
+
+
+        page = self.paginate_queryset(related_products)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(related_products, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+class SubscribeNewsLetter(generics.CreateAPIView):
+    serializer_class = SubscriberSerializer
+    # queryset = NewsLetterSubscriber.objects.all()
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        subcriber = serializer.create(serializer.validated_data)
+        signer = Signer()
+        cipertext = signer.sign(subcriber.email)
+
+        send_newletter_verify(email=subcriber.email, ciphertext=cipertext, domain=request.META['HTTP_HOST'])
+
+        return Response({
+            "message":"Thank you for subscribing."
+        },status=status.HTTP_200_OK)
+
+
+class VerifyNewsLetterEmail(APIView):
+    serializer_class = SubscriberSerializer
+    queryset = NewsLetterSubscriber.objects.all()
+    permission_classes = (AllowAny,)
+
+    def get(self, request,ciphertext):
+        signer = Signer()
+
+        email = signer.unsign(ciphertext)
+
+        subscriber = get_object_or_404(NewsLetterSubscriber, email=email)
+        subscriber.is_verified =True
+        subscriber.save()
+
+        return Response({"message":"Email has been verified"})
 
 

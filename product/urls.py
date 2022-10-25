@@ -1,6 +1,6 @@
 from django.urls import path
 
-from customer.views import PopularProducts, RecentProducts, RetrieveFeaturedProducts
+from customer.views import PopularProducts, RecentProducts, RelatedProductsView, RetrieveFeaturedProducts
 
 from .views import (AddProductVariant, CreateListProduct, DeleteProductImage,
  ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, RetrieveCategoryDetail, RetrieveFlashSale, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
@@ -12,6 +12,7 @@ urlpatterns = [
     path('featured/', RetrieveFeaturedProducts.as_view(), name="list_featured"),
     path('popular/', PopularProducts.as_view(), name="list_popular"),
     path('recent/', RecentProducts.as_view(), name="list_recent"),
+    path('<uid>/related/', RelatedProductsView.as_view(), name="related_products"),
     path('create/', CreateListProduct.as_view(), name='create_list_products'),
     path('add-variant/', AddProductVariant.as_view(), name="add_variant"),
     path('variants/<uid>/', UpdateRetrieveDestroyProductVariant.as_view(), name="add_variant"),

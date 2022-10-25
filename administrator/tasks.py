@@ -1,7 +1,6 @@
 from django.core.mail import EmailMessage
 from django.template import loader
 
-
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
@@ -18,6 +17,18 @@ def send_confirmation_mail(subject, new_user,code):
     context = {'new_user':new_user,"code":code}
     message = loader.get_template('mail.html').render(context)
     to_email = new_user['email']
+    from_email = 'rennintech@gmail.com'
+    msg = EmailMessage(mail_subject, message, to=[to_email],from_email=from_email)
+    msg.content_subtype = 'html'
+    msg.send()
+    print("SENIING NOW & SENT")
+
+
+def send_newletter_verify(email, ciphertext, domain):
+    mail_subject = "Newsletter Subscription Verification"
+    context = {'email':email,"ciphertext":ciphertext, "domain":domain}
+    message = loader.get_template('new_letter_verify.html').render(context)
+    to_email = email
     from_email = 'rennintech@gmail.com'
     msg = EmailMessage(mail_subject, message, to=[to_email],from_email=from_email)
     msg.content_subtype = 'html'

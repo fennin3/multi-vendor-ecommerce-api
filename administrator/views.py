@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from administrator.tasks import send_deal_request_approval_mail, send_flashsale_approval_mail
 from administrator.utils import STATUS
-from customer.models import ContactMessage, Customer
-from customer.serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, TestimonialSerializer
+from customer.models import ContactMessage, Customer, NewsLetterSubscriber
+from customer.serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, SubscriberSerializer, TestimonialSerializer
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
 from product.models import Category, DealOfTheDay, FlashSale, FlashSaleRequest, Product, SubCategory
@@ -792,15 +792,17 @@ class ApproveFlashSaleRequest(APIView):
     def post(self, request, uid):
         sale_request = get_object_or_404(FlashSaleRequest,uid=uid)
 
-        sale_request.is_approved = not sale_request.is_approved
+        sale_request.is_approved = True
 
         sale_request.save()
-        end_date = datetime.now() + timedelta(days=float(str(sale_request.days)))
 
         flash_sale = FlashSale.objects.create(
          product = sale_request.product,
-         end_date = end_date
+         end_date = sale_request.end_date,
+         start_date = sale_request.start_date,
+         stock = sale_request.stock
         )
+
         send_flashsale_approval_mail("FlashSale request approved",{"first_name":sale_request.product.vendor.user.first_name,"email":sale_request.product.vendor.user.email},{"date_start":flash_sale.start_date,"date_end":flash_sale.end_date})
 
         return Response(
@@ -863,3 +865,27 @@ class TestimonialViewSet(ModelViewSet):
     pagination_class = AdminVendorPagination
 
 
+class AllSubscribers(ListAPIView):
+    queryset = NewsLetterSubscriber.objects.all()
+    serializer_class = SubscriberSerializer
+    permission_classes = (IsSuperuser,)
+    pagination_class = AdminVendorPagination
+
+    def get(self, request):
+        query = self.request.query_params.get('status',None)
+        subscribers = self.queryset.all()
+
+        if query is not None:
+            if query == "verified":
+                subscribers = self.queryset.filter(is_verified=True)
+            elif query == "unverified":
+                subscribers = self.queryset.filter(is_verified=False)
+
+        page = self.paginate_queryset(subscribers)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.serializer_class(subscribers, many=True, context={'request': request})
+        return Response(serializer.data,status=status.HTTP_200_OK)
+        

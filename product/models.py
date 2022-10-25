@@ -1,3 +1,4 @@
+from email.policy import default
 import uuid
 from django.db import models
 from autoslug import AutoSlugField
@@ -181,13 +182,16 @@ class DealOfTheDay(models.Model):
 class FlashSaleRequest(models.Model):
     uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="flash_sales")
-    days = models.IntegerField(default=1)
+    stock = models.IntegerField(default=1)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
 class FlashSale(models.Model):
     uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
-    start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField(blank=False, null=False)
+    stock = models.IntegerField(default=1)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
 

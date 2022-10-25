@@ -17,7 +17,7 @@ from django.contrib.auth.models import update_last_login
 
 from vendor.utils import gen_confirmation_code
 
-from .models import ContactMessage, Customer, WishItem
+from .models import ContactMessage, Customer, NewsLetterSubscriber, WishItem
 
 
 User = get_user_model()
@@ -129,3 +129,7 @@ class WishItemSerializer2(serializers.ModelSerializer):
         model=WishItem
         fields="__all__" 
 
+class SubscriberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=NewsLetterSubscriber
+        fields="__all__"

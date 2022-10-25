@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from administrator.views import ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
-from customer.views import ContactMessageView, ListTestimonials
+from customer.views import ContactMessageView, ListTestimonials, SubscribeNewsLetter, VerifyNewsLetterEmail
 from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
 from vendor.views import CustomUserDetail
 
@@ -43,6 +43,9 @@ urlpatterns = [
     path("contact-us/", ContactMessageView.as_view(), name="contact_us"),
 
     path("testimonials/", ListTestimonials.as_view(), name="testimonials"),
+
+    path("newsletter/subscribe/", SubscribeNewsLetter.as_view(), name="subscribe"),
+    path("newsletter/verify/<ciphertext>/", VerifyNewsLetterEmail.as_view(), name="subscriber_verify"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

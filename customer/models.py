@@ -45,6 +45,17 @@ class WishItem(models.Model):
 
     def __str__(self):
         return f"WishItem for {self.user}"
+
+class NewsLetterSubscriber(models.Model):
+    email = models.EmailField()
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.email
+
+    class Meta:
+        verbose_name_plural="Subscribers"
+    
     
     
 

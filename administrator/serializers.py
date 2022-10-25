@@ -161,10 +161,10 @@ class FlashSaleRequestSerializer2(serializers.ModelSerializer):
 
 class AddFlashSaleSerializer(serializers.Serializer):
     product = serializers.UUIDField(required=True)
-    end_date = serializers.DateTimeField(required=True,format="%Y-%m-%d %H:%M:%S")
+    # end_date = serializers.DateTimeField(required=True,format="%Y-%m-%d %H:%M:%S")
     class Meta:
         model=FlashSale
-        fields=("product","end_date")
+        fields="__all__"
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
