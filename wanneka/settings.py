@@ -34,7 +34,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 12,
     'DEFAULT_AUTHENTICATION_CLASSES': (
      'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-     )
+     ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }
 
 
@@ -85,6 +88,7 @@ INSTALLED_APPS = [
     # External Libraries
     "storages",
     "solo",
+    "django_filters",
 ]
 
 MIDDLEWARE = [

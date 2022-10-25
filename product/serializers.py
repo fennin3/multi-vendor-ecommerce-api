@@ -12,6 +12,10 @@ class CategorySerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = "__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
 class CategoryUpdateSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(required=False)
     category = serializers.CharField(max_length=255, required=False)
@@ -19,16 +23,28 @@ class CategoryUpdateSerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = "__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
 class MainCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields="__all__"
+
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
 
 class SubCategorySerializer(serializers.ModelSerializer):
     category = MainCategorySerializer(read_only=True)
     class Meta:
         model = SubCategory
         fields = "__all__"
+
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
 
     
 
@@ -52,6 +68,7 @@ class ProductSerializer2(serializers.ModelSerializer):
 
         extra_kwargs = {
             "slug": {"read_only": True},
+            "is_active":{"read_only":True}
         }
 
 class ColorSerializer(serializers.ModelSerializer):
@@ -71,11 +88,19 @@ class VariantSerializer(serializers.ModelSerializer):
         model=ProductVariation
         fields = "__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model=Review
         fields="__all__"
+
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -92,7 +117,7 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ("uid","sku", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail", "vendor","sizes", "colors", "variants", "is_active", "is_approved", "reviews","created_at", "updated_at")
+        fields = ("uid","sku", "slug","name","category", "sub_categories", "price", "stock","description","additional_info","images", "discount_type","discount", "thumbnail", "vendor","sizes", "colors", "variants","rating", "is_active", "is_approved", "reviews","created_at", "updated_at")
 
 
 class ProductSerializer3(serializers.ModelSerializer):
@@ -123,12 +148,20 @@ class DealOfTheDaySerializer(serializers.ModelSerializer):
         model=DealOfTheDay
         fields="__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True},
+            "in_stock":{"read_only":True}
+        }
 
 class FlashSaleSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     class Meta:
         model = FlashSale
         fields="__all__"
+
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
         
 
 

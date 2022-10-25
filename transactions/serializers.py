@@ -8,6 +8,10 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         model = PaymentMethods
         fields="__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
 
 class PaymentMethodSerializer2(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -15,3 +19,7 @@ class PaymentMethodSerializer2(serializers.ModelSerializer):
     class Meta:
         model = PaymentMethods
         fields="__all__"
+
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }

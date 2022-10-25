@@ -7,7 +7,7 @@ from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, Al
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
  DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
  RetrieveCustomerOrder, RetrieveFlashSaleRequest,ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
-  ReturnedOrders, ShippedOrders, SubCategoryViewSet, SuspendUnsuspendCustomer,\
+  ReturnedOrders, ShippedOrders, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
@@ -21,6 +21,7 @@ router.register(r'countries', CountryView)
 router.register(r'customers', CustomerViewSet)
 router.register(r'banners', BannerViewSets)
 router.register(r'testimonials', TestimonialViewSet)
+router.register(r'social-media', SocialMediaViewSet)
 
 
 
@@ -29,6 +30,8 @@ urlpatterns = [
     path('signin/', AdminLogin.as_view(), name='admin_login'),
 
     path('orders/', AllOrders.as_view(), name='orders'),
+
+    path('social-media/<uid>/status/', SocialMediaStatus.as_view(), name='social_media_status'),
 
     path('subscribers/', AllSubscribers.as_view(), name='subs'),
 

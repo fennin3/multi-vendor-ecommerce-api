@@ -9,7 +9,7 @@ from vendor.models import CustomUser
 from vendor.serializers import UserSerializer
 from vendor.tasks import send_confirmation_mail
 
-from .models import Administrator, Banner, SiteConfiguration, SiteAddress, ShippingFeeZone, Country
+from .models import Administrator, Banner, SiteConfiguration, SiteAddress, ShippingFeeZone, Country, SocialMedia
 
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
@@ -80,18 +80,29 @@ class SiteAddressSerializer(serializers.ModelSerializer):
         model = SiteAddress
         fields="__all__"
 
-class SiteConfigSerializer(serializers.ModelSerializer):
-    addresses = SiteAddressSerializer(many=True, read_only=True)
+class SocialMediaSerializer(serializers.ModelSerializer):
     class Meta:
-        model=SiteConfiguration
-        exclude=('id',)
+        model=SocialMedia
+        fields="__all__"
+
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
+
+# class SiteConfigSerializer(serializers.ModelSerializer):
+#     addresses = SiteAddressSerializer(many=True, read_only=True)
+#     socials = SocialMediaSerializer(many=True, read_only=True)
+#     class Meta:
+#         model=SiteConfiguration
+#         exclude=('id',)
 
 class SiteConfigSerializer(serializers.ModelSerializer):
     addresses = SiteAddressSerializer(many=True, read_only=True)
     phone_number = serializers.CharField(required=False)
     site_email = serializers.EmailField(required=False)
     note = serializers.CharField(required=False)
-    
+    socials = SocialMediaSerializer(many=True, read_only=True)
     class Meta:
         model=SiteConfiguration
         exclude=('id',)
@@ -127,6 +138,10 @@ class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model=Country
         fields="__all__"
+    
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
 
 class CountrySerializer2(serializers.ModelSerializer):
     shipping_zones = serializers.ListField(child=serializers.CharField(),required=True)
@@ -134,6 +149,9 @@ class CountrySerializer2(serializers.ModelSerializer):
         model=Country
         fields="__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
 
 class CountrySerializer3(serializers.ModelSerializer):
     shipping_zones = serializers.ListField(child=serializers.CharField(),required=False)
@@ -142,6 +160,11 @@ class CountrySerializer3(serializers.ModelSerializer):
     class Meta:
         model=Country
         fields="__all__"
+
+
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
 
 
 class FlashSaleRequestSerializer(serializers.ModelSerializer):
@@ -171,6 +194,10 @@ class BannerSerializer(serializers.ModelSerializer):
         model=Banner
         fields="__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
 class BannerSerializer2(serializers.ModelSerializer):
     class Meta:
         model=Banner
@@ -179,5 +206,6 @@ class BannerSerializer2(serializers.ModelSerializer):
     extra_kwargs ={
         "is_active":{"read_ony":True}
     }
+
 
 

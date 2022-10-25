@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from administrator.utils import STATUS
 from product.models import Color, Product, Size
 from customer.models import Customer
 import datetime
@@ -126,6 +127,23 @@ class  Order(models.Model):
             item.ordered_date = datetime.datetime.now()
             item.save()
 
-    def update_order_status(self, date, status):
+    def update_order_status(self, status):
         for item in self.items.all():
             item.status = status
+            if status == STATUS.CANCELLED.value:
+                item.cancelled_date=self.cancelled_date
+            elif status == STATUS.DELIVERED.value:
+                item.delivered_date=self.delivered_date
+            elif status == STATUS.ORDER_CONFIRMED.value:
+                item.confirmed_date=self.confirmed_date
+            elif status == STATUS.ORDER_PLACED.value:
+                item.ordered_date = self.ordered_date
+            elif status == STATUS.ORDER_RETURNED.value:
+                item.returned_date = self.returned_date
+            elif status == STATUS.PROCESSED.value:
+                item.processed_date = self.processed_date
+            elif status == STATUS.REFUNDED.value:
+                item.refunded_date = self.refunded_date
+            elif status == STATUS.SHIPPED.value:
+                item.shipped_date = self.shipped_date
+            item.save()

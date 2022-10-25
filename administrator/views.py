@@ -19,10 +19,10 @@ from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Ven
 from vendor.paginations import AdminVendorPagination
 from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSerializer, VendorSerializer
 from rest_framework.generics import ListAPIView
-from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, Testimonial
+from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, SocialMedia, Testimonial
 from .permissions import IsSuperuser
 from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, BannerSerializer, CountrySerializer2,
-CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer,
+CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer, SocialMediaSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -509,9 +509,10 @@ class UpdateOrderStatus(APIView):
 
         order = get_object_or_404(Order, uid=serializer.data['order_uid'])
         _status = serializer.data['status']
+        date = datetime.now()
         if _status == STATUS.ORDER_CONFIRMED.value:
             order.status = _status
-            order.confirmed_date = datetime.now()
+            order.confirmed_date = date
         elif _status == STATUS.PROCESSED.value:
             order.status = _status
             order.processed_date = datetime.now()
@@ -531,6 +532,7 @@ class UpdateOrderStatus(APIView):
             order.status = _status
             order.refunded_date = datetime.now()
         order.save()
+        order.update_order_status(status=_status)
 
         return Response(
             {"message":"Successful"},status=status.HTTP_200_OK
@@ -889,3 +891,25 @@ class AllSubscribers(ListAPIView):
         serializer = self.serializer_class(subscribers, many=True, context={'request': request})
         return Response(serializer.data,status=status.HTTP_200_OK)
         
+
+class SocialMediaViewSet(ModelViewSet):
+    queryset = SocialMedia.objects.all().order_by('handle')
+    permission_classes = (IsSuperuser,)
+    serializer_class = SocialMediaSerializer
+    pagination_class = AdminVendorPagination
+
+
+class SocialMediaStatus(APIView):
+    queryset = SocialMedia.objects.all()
+    permission_classes = (IsSuperuser,)
+
+    def post(self, request, uid):
+        social = get_object_or_404(SocialMedia, uid=uid)
+
+        social.is_active = not social.is_active
+
+        social.save()
+
+        return Response({
+            "message":"Successful"
+        }, status=status.HTTP_200_OK)

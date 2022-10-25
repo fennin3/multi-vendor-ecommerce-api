@@ -288,3 +288,19 @@ class VerifyNewsLetterEmail(APIView):
         return Response({"message":"Email has been verified"})
 
 
+
+
+    # def get_queryset(self):
+    #     """
+    #     Optionally restricts the returned purchases to a given user,
+    #     by filtering against a `username` query parameter in the URL.
+    #     """
+    #     queryset = Product.objects.all()
+
+    #     username = self.request.query_params.get('username')
+
+    #     if username is not None:
+    #         queryset = queryset.filter(purchaser__username=username)
+    #     return queryset
+
+

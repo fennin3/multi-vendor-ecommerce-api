@@ -3,13 +3,18 @@ from django.urls import path
 from customer.views import PopularProducts, RecentProducts, RelatedProductsView, RetrieveFeaturedProducts
 
 from .views import (AddProductVariant, CreateListProduct, DeleteProductImage,
- ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, RetrieveCategoryDetail, RetrieveFlashSale, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
+ ImageUploadView, CategoryView, ListAllProducts, ListVendorProduct, ProductReviewsVendor, RetrieveCategoryDetail, RetrieveFlashSale, SearchFilterView, UpdateProductStatus, UpdateRetrieveDestroyProductVariant,
   UpdateRetrieveDetroyProduct, VariantStatus)
 
 
 urlpatterns = [
     path('', ListAllProducts.as_view(), name='list_products'),
+
     path('featured/', RetrieveFeaturedProducts.as_view(), name="list_featured"),
+
+    path('filter/', SearchFilterView.as_view(), name="filter_products"),
+
+
     path('popular/', PopularProducts.as_view(), name="list_popular"),
     path('recent/', RecentProducts.as_view(), name="list_recent"),
     path('<uid>/related/', RelatedProductsView.as_view(), name="related_products"),

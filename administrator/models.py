@@ -73,6 +73,7 @@ class SiteConfiguration(SingletonModel):
     phone_number = models.TextField()
     site_email = models.EmailField()
     note = models.TextField()
+    working_hours = models.TextField(blank=True, null=True)
     addresses = models.ManyToManyField(SiteAddress,blank=True)
 
     def __str__(self):
@@ -80,6 +81,10 @@ class SiteConfiguration(SingletonModel):
 
     class Meta:
         verbose_name = "Site Configuration"
+
+    def socials(self):
+        socials = SocialMedia.objects.filter(is_active=True)
+        return socials
 
 
 class Banner(models.Model):
@@ -107,4 +112,15 @@ class Testimonial(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+class SocialMedia(models.Model):
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
+    handle = models.CharField(max_length=1000)
+    link = models.CharField(max_length=1000)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    
+
+    def __str__(self):
+        return self.handle
     

@@ -99,6 +99,7 @@ class Product(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='vendor')
     is_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    rating = models.DecimalField(max_digits=5, decimal_places=1,default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -128,6 +129,16 @@ class Product(models.Model):
         thumbnail = File(thumb_io, name=filename + '.webp')
 
         return thumbnail
+
+    # def rating(self):
+    #     reviews = self.reviews.all()
+
+    #     ratings = [review.rate for review in reviews]
+
+    #     rating = sum(ratings)
+
+    #     return rating
+
 
 
 class Image(models.Model):
@@ -192,6 +203,7 @@ class FlashSale(models.Model):
     uid = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
     stock = models.IntegerField(default=1)
+    is_active = models.BooleanField(default=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 

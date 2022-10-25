@@ -6,15 +6,17 @@ from rest_framework.permissions import AllowAny
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from product.filters import ProductFilter
 
 from vendor.models import Vendor
-from vendor.paginations import AdminVendorPagination, CategoryPagination
+from vendor.paginations import AdminVendorPagination, CategoryPagination, ClientPagination
 from vendor.permissions import IsVendor, IsVendor2
 
 from .models import Category, FlashSale, Image, Product, SubCategory, Image, ProductVariation, Review, Size
 from .serializers import (FlashSaleSerializer, ImageSerializer, MainCategorySerializer, ProductSerializer, CategorySerializer, ProductSerializer2,
  ReviewSerializer2, SubCategorySerializer, VariantSerializer)
 
+from django_filters import rest_framework as filters
 
 
 class CategoryView(generics.ListCreateAPIView):
@@ -310,3 +312,13 @@ class RetrieveSubCatgoryDetail(generics.RetrieveAPIView):
     serializer_class = SubCategorySerializer
     queryset = SubCategory.objects.all()
     lookup_field = "uid"
+
+
+class SearchFilterView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = (AllowAny,)
+    pagination_class = ClientPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
+    queryset =  Product.objects.filter(is_active=True,is_approved=True, vendor__suspended=False, vendor__closed=False, category__is_active=True, sub_categories__is_active=True).order_by("-created_at")
+
