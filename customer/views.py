@@ -115,7 +115,7 @@ class CustomerLogin(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         response = {
             'success' : 'True',
-            'status code' : status.HTTP_200_OK,
+            'status_code' : status.HTTP_200_OK,
             'message': 'User logged in  successfully',
             'token' : serializer.data['token'],
             }

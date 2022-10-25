@@ -103,7 +103,7 @@ class VendorLogin(APIView):
         uid = CustomUser.objects.get(email=serializer.data['email']).uid
         response = {
             'success' : 'True',
-            'status code' : status.HTTP_200_OK,
+            'status_code' : status.HTTP_200_OK,
             'message': 'User logged in  successfully',
             'uid':uid,
             'token' : serializer.data['token'],
