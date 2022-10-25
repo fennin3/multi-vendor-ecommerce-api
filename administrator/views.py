@@ -54,7 +54,14 @@ class AdminLogin(APIView):
         return Response(response, status=status_code)
 
 
+class AdminProfile(generics.RetrieveAPIView):
+    permission_classes = (IsSuperuser,)
+    # authentication_class = JSONWebTokenAuthentication
 
+    def get(self, request):
+        admin = get_object_or_404(Administrator, user=request.user)
+        data = AdminSerializer(admin).data
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class ListCountries(APIView):

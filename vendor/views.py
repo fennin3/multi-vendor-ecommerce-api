@@ -121,9 +121,10 @@ class VendorUpdate(UpdateAPIView):
 
 class VendorProfile(RetrieveAPIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
 
     def get(self, request):
+        print(request.user)
         vendor = get_object_or_404(Vendor, user=request.user)
         data = VendorSerializer(vendor).data
         return Response(data, status=status.HTTP_200_OK)

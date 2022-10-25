@@ -12,6 +12,7 @@ class ProductFilter(filters.FilterSet):
     colors_name = filters.CharFilter(field_name='colors__name',lookup_expr='iexact')
     rating_min = filters.NumberFilter(field_name='rating', lookup_expr='gte')
     rating_max = filters.NumberFilter(field_name='rating', lookup_expr='lte')
+    sort_by = filters.OrderingFilter()
     # category__name =
 
     class Meta:

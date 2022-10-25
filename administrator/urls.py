@@ -2,7 +2,7 @@ from django.urls import path
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AllOrders, AllSubscribers, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
+from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
  ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
  DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
@@ -28,6 +28,8 @@ router.register(r'social-media', SocialMediaViewSet)
 urlpatterns = [
     path('', ListandCreateAdmin.as_view(), name='list_and_create_admin'),
     path('signin/', AdminLogin.as_view(), name='admin_login'),
+
+    path('profile/', AdminProfile.as_view(), name='admin_profile'),
 
     path('orders/', AllOrders.as_view(), name='orders'),
 
