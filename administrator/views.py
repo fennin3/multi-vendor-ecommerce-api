@@ -11,8 +11,8 @@ from customer.models import ContactMessage, Customer, NewsLetterSubscriber
 from customer.serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, SubscriberSerializer, TestimonialSerializer
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
-from product.models import Category, DealOfTheDay, FlashSale, FlashSaleRequest, Product, SubCategory
-from product.serializers import CategorySerializer, CategoryUpdateSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SubCategorySerializer
+from product.models import Category, Color, DealOfTheDay, FlashSale, FlashSaleRequest, Product, Size, SubCategory
+from product.serializers import CategorySerializer, CategoryUpdateSerializer, ColorSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SizeSerializer, SubCategorySerializer
 from transactions.models import PaymentMethods
 from transactions.serializers import PaymentMethodSerializer2
 from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
@@ -920,3 +920,16 @@ class SocialMediaStatus(APIView):
         return Response({
             "message":"Successful"
         }, status=status.HTTP_200_OK)
+
+
+class SizeModelViewset(ModelViewSet):
+    serializer_class = SizeSerializer
+    permission_classes = (IsSuperuser,)
+    queryset = Size.objects.all()
+    pagination_class = AdminVendorPagination
+
+class ColorModelViewset(ModelViewSet):
+    serializer_class = ColorSerializer
+    permission_classes = (IsSuperuser,)
+    queryset = Color.objects.all()
+    pagination_class = AdminVendorPagination

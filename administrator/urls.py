@@ -3,11 +3,11 @@ from django.urls import path, include
 from rest_framework import routers
 
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
- ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ConfirmAccount, ConfirmedOrders, CountryView, 
+ ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ColorModelViewset, ConfirmAccount, ConfirmedOrders, CountryView, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
  DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
  RetrieveCustomerOrder, RetrieveFlashSaleRequest,ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
-  ReturnedOrders, ShippedOrders, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
+  ReturnedOrders, ShippedOrders, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
@@ -22,6 +22,8 @@ router.register(r'customers', CustomerViewSet)
 router.register(r'banners', BannerViewSets)
 router.register(r'testimonials', TestimonialViewSet)
 router.register(r'social-media', SocialMediaViewSet)
+router.register(r'sizes', SizeModelViewset)
+router.register(r'colors', ColorModelViewset)
 
 
 
