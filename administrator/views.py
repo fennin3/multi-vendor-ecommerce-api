@@ -320,7 +320,7 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     permission_classes = (IsSuperuser,)
-    lookup_field = 'uid'
+    lookup_field = 'slug'
     pagination_class = AdminVendorPagination
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ProductFilter

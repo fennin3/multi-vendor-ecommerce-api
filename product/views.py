@@ -105,7 +105,8 @@ class ListVendorProduct(generics.ListAPIView):
     queryset = Product.objects.all().order_by('-created_at')
     pagination_class = AdminVendorPagination
     serializer_class = ProductSerializer2
-
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
 
     def get(self, request, vendor_id=None):
         status = self.request.query_params.get('approved')
@@ -132,7 +133,7 @@ class UpdateRetrieveDetroyProduct(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsVendor2,)
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = "uid"
+    lookup_field = "slug"
     
 
 class UpdateProductStatus(APIView):
