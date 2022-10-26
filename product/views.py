@@ -243,7 +243,7 @@ class CategorySubCategory(generics.ListAPIView):
     queryset = SubCategory.objects.all()
 
     def get(self, request, uid):
-        category = get_object_or_404(Category,uid=uid)
+        category = get_object_or_404(Category,slug=uid)
 
         sub_cats = self.queryset.filter(category=category).order_by("name")
 
@@ -263,7 +263,7 @@ class CategoryProducts(generics.ListAPIView):
     queryset = Product.objects.all().order_by("created_at")
 
     def get(self, request, uid):
-        category = get_object_or_404(Category,uid=uid)
+        category = get_object_or_404(Category,slug=uid)
 
         products = self.queryset.filter(category=category).order_by("created_at")
 
@@ -282,7 +282,7 @@ class SubCategoryProducts(generics.ListAPIView):
     queryset = Product.objects.all().order_by("created_at")
 
     def get(self, request, uid):
-        subcategory = get_object_or_404(SubCategory,uid=uid)
+        subcategory = get_object_or_404(SubCategory,slug=uid)
 
         products = self.queryset.filter(sub_categories__in=[subcategory]).order_by("created_at")
 
@@ -305,14 +305,14 @@ class RetrieveCategoryDetail(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
     serializer_class = MainCategorySerializer
     queryset = Category.objects.all()
-    lookup_field = "uid"
+    lookup_field = "slug"
 
 
 class RetrieveSubCatgoryDetail(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SubCategorySerializer
     queryset = SubCategory.objects.all()
-    lookup_field = "uid"
+    lookup_field = "slug"
 
 
 class SearchFilterView(generics.ListAPIView):

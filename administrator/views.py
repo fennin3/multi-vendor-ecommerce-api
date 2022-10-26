@@ -339,14 +339,14 @@ class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all().order_by("name")
     serializer_class = MainCategorySerializer
     permission_classes = (IsSuperuser,)
-    lookup_field = 'uid'
+    lookup_field = 'slug'
     pagination_class = AdminVendorPagination
 
 class SubCategoryViewSet(ModelViewSet):
     queryset = SubCategory.objects.all().order_by("name")
     serializer_class = SubCategorySerializer
     permission_classes = (IsSuperuser,)
-    lookup_field = 'uid'
+    lookup_field = 'slug'
     pagination_class = AdminVendorPagination
 
     def create(self, request):
