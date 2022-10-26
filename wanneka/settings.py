@@ -41,33 +41,76 @@ REST_FRAMEWORK = {
 }
 
 
-JWT_AUTH = {
-  'JWT_ENCODE_HANDLER':
-  'rest_framework_jwt.utils.jwt_encode_handler',
-  'JWT_DECODE_HANDLER':
-  'rest_framework_jwt.utils.jwt_decode_handler',
-  'JWT_PAYLOAD_HANDLER':
-  'rest_framework_jwt.utils.jwt_payload_handler',
-  'JWT_PAYLOAD_GET_USER_ID_HANDLER':
-  'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
-  'JWT_RESPONSE_PAYLOAD_HANDLER':
-  'rest_framework_jwt.utils.jwt_response_payload_handler',
+# JWT_AUTH = {
+#   'JWT_PAYLOAD_HANDLER':
+#   'rest_framework_jwt.utils.jwt_create_payload',
+# #   'JWT_RESPONSE_PAYLOAD_HANDLER':
+# #   'vendor.utils2.jwt_response_payload_handler',
+#   'JWT_ENCODE_HANDLER':
+#   'rest_framework_jwt.utils.jwt_encode_payload',
+#   'JWT_DECODE_HANDLER':
+#   'rest_framework_jwt.utils.jwt_decode_token',
+# #   'JWT_PAYLOAD_HANDLER':
+# #   'rest_framework_jwt.utils.jwt_payload_handler',
+#   'JWT_PAYLOAD_GET_USERNAME_HANDLER':
+#    'rest_framework_jwt.utils.jwt_get_username_from_payload_handler',
+#   'JWT_PAYLOAD_GET_USER_ID_HANDLER':
+#   'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+#   'JWT_RESPONSE_PAYLOAD_HANDLER':
+#   'rest_framework_jwt.utils.jwt_response_payload_handler',
  
-  'JWT_SECRET_KEY': "$nerdthejohn*@querords_dmf8736fm284.!",
-  'JWT_GET_USER_SECRET_KEY': None,
-  'JWT_PUBLIC_KEY': None,
-  'JWT_PRIVATE_KEY': None,
-  'JWT_ALGORITHM': 'HS256',
-  'JWT_VERIFY': True,
-  'JWT_VERIFY_EXPIRATION': True,
-  'JWT_LEEWAY': 0,
-  'JWT_EXPIRATION_DELTA': timedelta(days=30),
-  'JWT_AUDIENCE': None,
-  'JWT_ISSUER': None,
-  'JWT_ALLOW_REFRESH': False,
-  'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
-  'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-  'JWT_AUTH_COOKIE': None,
+#   'JWT_SECRET_KEY': "$nerdthejohn*@querords_dmf8736fm284.!",
+#   'JWT_GET_USER_SECRET_KEY': None,
+#   'JWT_PUBLIC_KEY': None,
+#   'JWT_PRIVATE_KEY': None,
+#   'JWT_ALGORITHM': 'HS256',
+#   'JWT_VERIFY': True,
+#   'JWT_VERIFY_EXPIRATION': True,
+#   'JWT_LEEWAY': 0,
+#   'JWT_EXPIRATION_DELTA': timedelta(days=30),
+#   'JWT_AUDIENCE': None,
+#   'JWT_ISSUER': None,
+#   'JWT_ALLOW_REFRESH': True,
+#   'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
+#   'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+#   'JWT_AUTH_COOKIE': None,
+# }
+
+JWT_AUTH = {
+    'JWT_SECRET_KEY': SECRET_KEY,
+    'JWT_GET_USER_SECRET_KEY': None,
+    'JWT_PRIVATE_KEY': None,
+    'JWT_PUBLIC_KEY': None,
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_INSIST_ON_KID': False,
+    'JWT_TOKEN_ID': 'include',
+    'JWT_AUDIENCE': None,
+    'JWT_ISSUER': None,
+    'JWT_ENCODE_HANDLER':
+        'rest_framework_jwt.utils.jwt_encode_payload',
+    'JWT_DECODE_HANDLER':
+        'rest_framework_jwt.utils.jwt_decode_token',
+    'JWT_PAYLOAD_HANDLER':
+        'rest_framework_jwt.utils.jwt_create_payload',
+    'JWT_PAYLOAD_GET_USERNAME_HANDLER':
+        'rest_framework_jwt.utils.jwt_get_username_from_payload_handler',
+    'JWT_PAYLOAD_INCLUDE_USER_ID': True,
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LEEWAY': 0,
+    'JWT_EXPIRATION_DELTA': timedelta(days=365),
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_RESPONSE_PAYLOAD_HANDLER':
+        'rest_framework_jwt.utils.jwt_create_response_payload',
+    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_COOKIE_DOMAIN': None,
+    'JWT_AUTH_COOKIE_PATH': '/',
+    'JWT_AUTH_COOKIE_SECURE': True,
+    'JWT_AUTH_COOKIE_SAMESITE': 'Lax',
+    'JWT_IMPERSONATION_COOKIE': None,
+    'JWT_DELETE_STALE_BLACKLISTED_TOKENS': False,
 }
 
 INSTALLED_APPS = [
@@ -90,6 +133,10 @@ INSTALLED_APPS = [
     "solo",
     "django_filters",
     "corsheaders",
+
+    "rest_framework_jwt",
+    "rest_framework_jwt.blacklist",
+
 ]
 
 MIDDLEWARE = [

@@ -5,6 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from administrator.filters import ProductFilter
 from administrator.tasks import send_deal_request_approval_mail, send_flashsale_approval_mail
 from administrator.utils import STATUS
 from customer.models import ContactMessage, Customer, NewsLetterSubscriber
@@ -26,6 +27,10 @@ CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSeri
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum
 from rest_framework.renderers import TemplateHTMLRenderer
+from django_filters import rest_framework as filters
+
+
+from django.contrib.auth import logout
 
 
 class ListandCreateAdmin(generics.ListCreateAPIView):
@@ -317,6 +322,8 @@ class ProductViewSet(ModelViewSet):
     permission_classes = (IsSuperuser,)
     lookup_field = 'uid'
     pagination_class = AdminVendorPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
 
     def create(self, request, *args, **kwargs):
         serializer = ProductSerializer2(data=request.data)
@@ -933,3 +940,13 @@ class ColorModelViewset(ModelViewSet):
     permission_classes = (IsSuperuser,)
     queryset = Color.objects.all()
     pagination_class = AdminVendorPagination
+
+
+# class Logout(APIView):
+    
+#     def post(self, request):
+#         logout(request)
+
+#         return Response({
+#             "message":"Logged out successfully"
+#         }, status=status.HTTP_200_OK)

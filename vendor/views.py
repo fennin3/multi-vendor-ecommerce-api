@@ -1,4 +1,5 @@
 #API VIews
+import uuid
 from rest_framework import generics, status
 from rest_framework.generics import RetrieveAPIView, CreateAPIView
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -8,6 +9,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from administrator.permissions import IsSuperuser
 from administrator.serializers import FlashSaleRequestSerializer2
+from rest_framework_jwt.blacklist.models import BlacklistedToken
 
 # from administrator.permissions import IsSuperuser
 from order.models import OrderItem
@@ -22,6 +24,9 @@ from .serializers import DealOfTheDayRequestSerializer, UpdateOrderStatusSeriali
 from order.serializers import OrderItemSerializer
 
 from rest_framework.generics import UpdateAPIView
+from datetime import date, datetime, timedelta
+
+
 
 
 
@@ -199,4 +204,37 @@ class ListCreateFlashRequest(generics.ListCreateAPIView):
 
         serializer = self.serializer_class(flash_sales, many=True, context={'request': request})
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+class Logout(APIView):
+    def post(self, request):
+        token = str(request.headers.get("Authorization")).split(" ")[1]
+
+        blcklst = BlacklistedToken.objects.create(
+            user = request.user,
+            token = token,
+            token_id = uuid.uuid4(),
+            expires_at = datetime.now() + timedelta(days=1)
+        )
+
+        return Response(
+            {"message":"logged out successfully"}, status=status.HTTP_200_OK
+        )
+
+
+class TokenRefresh(APIView):
+    def post(self, request):
+        token = str(request.headers.get("Authorization")).split(" ")[1]
+
+        blcklst = BlacklistedToken.objects.create(
+            user = request.user,
+            token = token,
+            token_id = uuid.uuid4(),
+            expires_at = datetime.now() + timedelta(days=1)
+        )
+
+        return Response(
+            {"message":"logged out successfully"}, status=status.HTTP_200_OK
+        )
+
 

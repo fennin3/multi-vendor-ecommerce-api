@@ -7,7 +7,11 @@ from django.conf import settings
 from administrator.views import ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
 from customer.views import ContactMessageView, ListTestimonials, SubscribeNewsLetter, VerifyNewsLetterEmail
 from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, ListColors, ListSizes, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
-from vendor.views import CustomUserDetail
+from vendor.views import CustomUserDetail, Logout
+
+from rest_framework_jwt.blacklist.views import BlacklistView
+from rest_framework_jwt.views import refresh_jwt_token
+
 
 urlpatterns = [
     path('admin-dashboard/', admin.site.urls),
@@ -43,6 +47,12 @@ urlpatterns = [
     path("contact-us/", ContactMessageView.as_view(), name="contact_us"),
 
     path("testimonials/", ListTestimonials.as_view(), name="testimonials"),
+
+    path("auth/logout/", BlacklistView.as_view({"post": "create"})),
+
+    path("auth/logout/", Logout.as_view(), name="logout"),
+
+    path('auth/token-refresh/', refresh_jwt_token, name="refresh_token"),
 
     path("colors/", ListColors.as_view(), name="colors"),
     path("sizes/", ListSizes.as_view(), name="sizes"),

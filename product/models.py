@@ -100,7 +100,7 @@ class Product(models.Model):
     is_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     rating = models.DecimalField(max_digits=5, decimal_places=1,default=0.0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

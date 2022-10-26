@@ -19,3 +19,4 @@ def generate_uuid():
 def gen_confirmation_code():
     cc =  random.randrange(100000, 999999)
     return cc
+
