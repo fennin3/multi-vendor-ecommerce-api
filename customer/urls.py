@@ -16,7 +16,7 @@ urlpatterns = [
     path('deal/', RetrieveDealOfTheDay.as_view(), name='deal'),
     path('flashsales/', RetrieveFlashSale.as_view(), name="flash_sale"),
     path('banners/', RetrieveAllBanners.as_view(), name="banners"),
-
+    
     path('wishlist/', WishListViews.as_view(), name="wishlist"),
     path('wishlist/<uid>/', WishListRetrieveDeleteViews.as_view(), name="wishlist_one"),
 ]

@@ -4,8 +4,8 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
-from administrator.views import ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
-from customer.views import ContactMessageView, ListTestimonials, SubscribeNewsLetter, VerifyNewsLetterEmail
+from administrator.views import CountVisitor, ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
+from customer.views import ContactMessageView, ListShippingZonesView, ListTestimonials, SubscribeNewsLetter, VerifyNewsLetterEmail
 from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, ListColors, ListSizes, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
 from vendor.views import CustomUserDetail, Logout
 
@@ -54,8 +54,11 @@ urlpatterns = [
 
     path('auth/token-refresh/', refresh_jwt_token, name="refresh_token"),
 
+    path('visitors/count/', CountVisitor.as_view(), name='count_visitors'),
+
     path("colors/", ListColors.as_view(), name="colors"),
     path("sizes/", ListSizes.as_view(), name="sizes"),
+    path("zones/", ListShippingZonesView.as_view(), name="zones"),
 
     path("newsletter/subscribe/", SubscribeNewsLetter.as_view(), name="subscribe"),
     path("newsletter/verify/<ciphertext>/", VerifyNewsLetterEmail.as_view(), name="subscriber_verify"),

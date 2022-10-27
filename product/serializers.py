@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from administrator.models import Visitor
 
 from vendor.models import Vendor
 from vendor.serializers import UserSerializer, VendorSerializer
@@ -163,6 +164,11 @@ class FlashSaleSerializer(serializers.ModelSerializer):
             "is_active":{"read_only":True}
         }
         
+
+class VisitorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Visitor
+        fields="__all__"        
 
 
 

@@ -7,13 +7,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from administrator.models import Banner, Testimonial
-from administrator.serializers import BannerSerializer2
+from administrator.models import Banner, ShippingFeeZone, Testimonial
+from administrator.serializers import BannerSerializer2, ShippingFeeZoneSerializer
 from administrator.tasks import send_confirmation_mail, send_newletter_verify
 from product.models import Category, DealOfTheDay, Product, SubCategory
 from product.serializers import CategorySerializer, DealOfTheDaySerializer, ProductSerializer
 from vendor.models import ConfirmationCode, Vendor
-from vendor.paginations import ClientPagination
+from vendor.paginations import ClientPagination, CustomPagination
 from django.db.models import Count
 from .models import ContactMessage, Customer, NewsLetterSubscriber, WishItem
 from .permissions import IsCustomer
@@ -288,7 +288,11 @@ class VerifyNewsLetterEmail(APIView):
         return Response({"message":"Email has been verified"})
 
 
-
+class ListShippingZonesView(generics.ListAPIView):
+    permission_classes =(AllowAny,)
+    serializer_class = ShippingFeeZoneSerializer
+    queryset = ShippingFeeZone.objects.filter(is_active=True).order_by('name')
+    pagination_class = CustomPagination
 
     # def get_queryset(self):
     #     """

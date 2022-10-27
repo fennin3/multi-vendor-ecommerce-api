@@ -22,6 +22,7 @@ class ShippingFeeZone(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     shipping_fee = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -65,16 +66,31 @@ class SiteAddress(models.Model):
 
     def __str__(self):
         return self.title
+
+class SocialMedia(models.Model):
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
+    title = models.CharField(max_length=255, default="")
+    handle = models.CharField(max_length=1000)
+    link = models.CharField(max_length=1000)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     
+
+    def __str__(self):
+        return self.handle    
 
 class SiteConfiguration(SingletonModel):
     site_name = models.CharField(max_length=255, default='Site Name')
     maintenance_mode = models.BooleanField(default=False)
-    phone_number = models.TextField()
-    site_email = models.EmailField()
-    note = models.TextField()
+    phone_number = models.TextField(null=False, blank=True)
+    site_email = models.EmailField(null=False, blank=True)
+    appstore_link = models.URLField(blank=True)
+    playstore_link = models.URLField(blank=True)
+    note = models.TextField(null=False, blank=True)
     working_hours = models.TextField(blank=True, null=True)
     addresses = models.ManyToManyField(SiteAddress,blank=True)
+    # social_media = models.ManyToManyField(SocialMedia,blank=True)
 
     def __str__(self):
         return "Site Configuration"
@@ -112,15 +128,15 @@ class Testimonial(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class SocialMedia(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
-    handle = models.CharField(max_length=1000)
-    link = models.CharField(max_length=1000)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
     
 
+
+class Visitor(models.Model):
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
+    ip = models.CharField(max_length=255)
+    visited_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return self.handle
-    
+        return f"{self.ip} -   visited site at   -   {self.visited_at}"
+
+

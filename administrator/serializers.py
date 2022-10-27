@@ -132,6 +132,10 @@ class ShippingFeeZoneSerializer(serializers.ModelSerializer):
         model=ShippingFeeZone
         fields="__all__"
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
 class CountrySerializer(serializers.ModelSerializer):
     shipping_zones = ShippingFeeZoneSerializer(read_only=True, many=True)
     # states = StateSerializer(read_only=True)

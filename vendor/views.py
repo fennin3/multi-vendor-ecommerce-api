@@ -12,20 +12,19 @@ from administrator.serializers import FlashSaleRequestSerializer2
 from rest_framework_jwt.blacklist.models import BlacklistedToken
 
 # from administrator.permissions import IsSuperuser
-from order.models import OrderItem
 
-from product.models import FlashSaleRequest, Product
+from product.models import FlashSaleRequest
 from vendor.paginations import AdminVendorPagination, ClientPagination
 
 from .models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
 from .permissions import IsUser, IsVendor
-from .serializers import DealOfTheDayRequestSerializer, UpdateOrderStatusSerializer, UserSerializer, VendorSerializer, ConfirmAccountSerializer, UserLoginSerializer, VendorSerializer2, VendorSerializer3
+from .serializers import DealOfTheDayRequestSerializer, UserSerializer, VendorSerializer, ConfirmAccountSerializer, UserLoginSerializer, VendorSerializer2, VendorSerializer3
 
-from order.serializers import OrderItemSerializer
 
 from rest_framework.generics import UpdateAPIView
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
+from django.contrib.auth import logout
 
 
 
@@ -216,6 +215,7 @@ class Logout(APIView):
             token_id = uuid.uuid4(),
             expires_at = datetime.now() + timedelta(days=1)
         )
+        logout(request)
 
         return Response(
             {"message":"logged out successfully"}, status=status.HTTP_200_OK

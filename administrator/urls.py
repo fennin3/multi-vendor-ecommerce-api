@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework import routers
 
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
- ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ColorModelViewset, ConfirmAccount, ConfirmedOrders, CountryView, 
+ ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ColorModelViewset, ConfirmAccount, ConfirmedOrders, CountryView, CountsAnalytics, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
  DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
  RetrieveCustomerOrder, RetrieveFlashSaleRequest,ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
@@ -74,6 +74,8 @@ urlpatterns = [
     path('orders/analytics/daily/', DailyOrdersSummary.as_view(), name="daily_summary"),
     path('orders/analytics/monthly/', MonthlyOrdersSummary.as_view(), name="monthly_summary"),
     path('orders/analytics/yearly/', AnnualOrdersSummary.as_view(), name="year_summary"),
+
+    path('orders/analytics/counts/', CountsAnalytics.as_view(), name="summary_counts"),
 
     
     

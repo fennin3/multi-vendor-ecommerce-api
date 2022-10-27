@@ -13,19 +13,19 @@ from customer.serializers import ContactMessageSerializer, CustomerSerializer, C
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
 from product.models import Category, Color, DealOfTheDay, FlashSale, FlashSaleRequest, Product, Size, SubCategory
-from product.serializers import CategorySerializer, CategoryUpdateSerializer, ColorSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SizeSerializer, SubCategorySerializer
+from product.serializers import CategorySerializer, CategoryUpdateSerializer, ColorSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SizeSerializer, SubCategorySerializer, VisitorSerializer
 from transactions.models import PaymentMethods
 from transactions.serializers import PaymentMethodSerializer2
 from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
 from vendor.paginations import AdminVendorPagination
 from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSerializer, VendorSerializer
 from rest_framework.generics import ListAPIView
-from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, SocialMedia, Testimonial
+from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, SocialMedia, Testimonial, Visitor
 from .permissions import IsSuperuser
 from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, BannerSerializer, CountrySerializer2,
 CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer, SocialMediaSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
-from django.db.models import Sum
+from django.db.models import Sum,Count
 from rest_framework.renderers import TemplateHTMLRenderer
 from django_filters import rest_framework as filters
 
@@ -565,7 +565,6 @@ class DailyOrdersSummary(APIView):
             "today_sale":result['total']
         }, status=status.HTTP_200_OK)
 
-
 class MonthlyOrdersSummary(APIView):
     permission_classes = (IsSuperuser,)
     queryset = Order.objects.all()
@@ -603,13 +602,57 @@ class AnnualOrdersSummary(APIView):
         result = queryset.aggregate(total=Sum('paid_amount'))
 
         data = queryset.values_list("ordered_date__date__month").annotate(total=Sum('paid_amount'))
-        data = [{calendar.month_name[item[0]]:item[1]} for item in data]
+        data = [{calendar.month_name[item[0]][:3]:item[1]} for item in data]
 
         return Response({
             'orders':queryset.count(),
             "annual_total":result['total'],
             "data":data
         }, status=status.HTTP_200_OK)
+
+class CountsAnalytics(APIView):
+    permission_classes = (IsSuperuser,)
+    # queryset = Order.objects.all()
+    serializer_class = AnnualSerializer
+
+    def get(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Sales
+        queryset_order = Order.objects.filter(ordered_date__date__year=serializer.data['year'], ordered=True)
+        data = queryset_order.values_list("ordered_date__date__month").annotate(total=Count('uid'))
+        sales = [{calendar.month_name[item[0]][:3]:item[1]} for item in data]
+
+        # Visitors
+        queryset_visitor = Visitor.objects.filter(visited_at__date__year=serializer.data['year'])
+        data = queryset_visitor.values_list("visited_at__date__month").annotate(total=Count('uid'))
+        visitors = [{calendar.month_name[item[0]][:3]:item[1]} for item in data]
+
+
+        # products
+        queryset_product = Product.objects.filter(created_at__year=serializer.data['year'])
+        data = queryset_product.values_list("created_at__month").annotate(total=Count('uid'))
+        products = [{calendar.month_name[item[0]][:3]:item[1]} for item in data]
+
+
+
+        return Response({
+            "sales":sales,
+            "visitors":visitors,
+            "products":products
+        }, status=status.HTTP_200_OK)
+
+
+# class RevenueBasedonArea(APIView):
+#     permission_classes = (IsSuperuser,)
+#     # queryset = Order.objects.all()
+#     serializer_class = AnnualSerializer
+
+#     def get(self, request):
+#         pass
+
 
 class RetrieveUpdateDestroyAdminView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdminSerializer2
@@ -941,6 +984,12 @@ class ColorModelViewset(ModelViewSet):
     queryset = Color.objects.all()
     pagination_class = AdminVendorPagination
 
+
+
+class CountVisitor(generics.CreateAPIView):
+    model = Visitor
+    permission_classes = ()
+    serializer_class = VisitorSerializer
 
 # class Logout(APIView):
     
