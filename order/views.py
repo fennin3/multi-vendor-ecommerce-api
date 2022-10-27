@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Sum
 
 from customer.models import Customer
+from order.filters import OrderItemFilter
 from vendor.paginations import AdminVendorPagination
 from vendor.permissions import IsVendor
 from vendor.serializers import UpdateOrderStatusSerializer
@@ -20,6 +21,8 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
 
 import calendar
+from django_filters import rest_framework as filters
+
 
 @api_view(["POST"])
 @permission_classes([IsCustomer])
@@ -74,41 +77,37 @@ def add_to_cart(request):
             )
 
 
-class VendorAllOrder(generics.ListAPIView):
-    permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
-    pagination_class = AdminVendorPagination
-    serializer_class = OrderItemSerializer
-    queryset = OrderItem.objects.select_related('item').filter(ordered=True)
+# class VendorAllOrder(generics.ListAPIView):
+#     permission_classes = (IsVendor,)
+#     authentication_class = JSONWebTokenAuthentication
+#     serializer_class = OrderItemSerializer
+#     pagination_class = AdminVendorPagination
+#     queryset = OrderItem.objects.select_related('item').filter(ordered=True)
 
-    def get(self, request):
-        orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid).order_by('-ordered_date')
+#     def get(self, request):
+#         orderitems = self.queryset.filter(item__vendor__user__uid=request.user.uid).order_by('-ordered_date')
 
-        page = self.paginate_queryset(orderitems)
-        if page is not None:
-            serializer = self.serializer_class(page, many=True, context={'request': request})
-            return self.get_paginated_response(serializer.data)
+#         page = self.paginate_queryset(orderitems)
+#         if page is not None:
+#             serializer = self.serializer_class(page, many=True, context={'request': request})
+#             return self.get_paginated_response(serializer.data)
 
-        serializer = self.serializer_class(orderitems, many=True, context={'request': request})
-        return Response(serializer.data,status=status.HTTP_200_OK)
+#         serializer = self.serializer_class(orderitems, many=True, context={'request': request})
+#         return Response(serializer.data,status=status.HTTP_200_OK)
 
 class VendorOrder(generics.ListAPIView):
     permission_classes = (IsVendor,)
     authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
     pagination_class = AdminVendorPagination
-    queryset = OrderItem.objects.select_related('item').filter(ordered=True)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = OrderItemFilter
 
-    def get(self, request, status):
-        orderitems = self.queryset.filter(status=status,item__vendor__user__uid=request.user.uid).order_by('-ordered_date')
-
-        page = self.paginate_queryset(orderitems)
-        if page is not None:
-            serializer = self.serializer_class(page, many=True, context={'request': request})
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.serializer_class(orderitems, many=True, context={'request': request})
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    def get_queryset(self):
+        print("djskjdksj")
+        orderitems = OrderItem.objects.select_related('item').filter(ordered=True, item__vendor__user__uid=self.request.user.uid).order_by('-ordered_date')
+        print(orderitems)
+        return orderitems
 
 # class VendorShippedOrder(generics.ListAPIView):
 #     permission_classes = (IsVendor,)

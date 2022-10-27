@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from administrator.filters import ProductFilter
+from administrator.filters import OrderFilter, ProductFilter
 from administrator.tasks import send_deal_request_approval_mail, send_flashsale_approval_mail
 from administrator.utils import STATUS
 from customer.models import ContactMessage, Customer, NewsLetterSubscriber
@@ -464,54 +464,58 @@ class AllOrders(ListAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True).order_by('-ordered_date')
     pagination_class = AdminVendorPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = OrderFilter
 
-class OrderedOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.ORDER_PLACED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class OrderedOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.ORDER_PLACED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
 
-class ProcessedOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.PROCESSED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class ProcessedOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.PROCESSED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
 
-class ShippedOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.SHIPPED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class ShippedOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.SHIPPED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
 
-class ConfirmedOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.ORDER_CONFIRMED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class ConfirmedOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.ORDER_CONFIRMED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
 
-class DeliveredOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.DELIVERED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class DeliveredOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.DELIVERED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
 
-class CancelledOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.CANCELLED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class CancelledOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.CANCELLED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
 
-class RefundededOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.REFUNDED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class RefundededOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.REFUNDED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
 
-class ReturnedOrders(ListAPIView):
-    permission_classes= (IsSuperuser,)
-    serializer_class = OrderSerializer
-    queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.ORDER_RETURNED.value).order_by('-ordered_date')
-    pagination_class = AdminVendorPagination
+# class ReturnedOrders(ListAPIView):
+#     permission_classes= (IsSuperuser,)
+#     serializer_class = OrderSerializer
+#     queryset = Order.objects.select_related('user').prefetch_related('items').filter(ordered=True, status=STATUS.ORDER_RETURNED.value).order_by('-ordered_date')
+#     pagination_class = AdminVendorPagination
+
+
 
 class UpdateOrderStatus(APIView):
     permission_classes=(IsSuperuser,)

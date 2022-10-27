@@ -31,6 +31,9 @@ class OrderSerializer(serializers.ModelSerializer):
         model=Order
         fields="__all__"
 
+        extra_kwargs ={
+            "order_id":{"read_only":True}
+        }
 class MonthSerializer(serializers.Serializer):
     month = serializers.CharField(max_length=2)
     year = serializers.CharField(max_length=4)

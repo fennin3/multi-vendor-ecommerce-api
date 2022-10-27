@@ -3,11 +3,10 @@ from django.urls import path, include
 from rest_framework import routers
 
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
- ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CancelledOrders, CategoryViewSet, ColorModelViewset, ConfirmAccount, ConfirmedOrders, CountryView, CountsAnalytics, 
- CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, DeliveredOrders, 
- DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, OrderedOrders, ProductViewSet, RefundededOrders, \
- RetrieveCustomerOrder, RetrieveFlashSaleRequest,ProcessedOrders, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, 
-  ReturnedOrders, ShippedOrders, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
+ ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CategoryViewSet, ColorModelViewset, ConfirmAccount, CountryView, CountsAnalytics, 
+ CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, 
+ DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, ProductViewSet, \
+ RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 
@@ -52,14 +51,14 @@ urlpatterns = [
 
     path('flash-requests/<uid>/', UpdateDeleteRetrieveFlashSaleRequest.as_view(), name='update_flash_requests'),
 
-    path('orders/placed_orders/', OrderedOrders.as_view(), name='new_orders'),
-    path('orders/processed_orders/', ProcessedOrders.as_view(), name='processed_orders'),
-    path('orders/shipped_orders/', ShippedOrders.as_view(), name='shipped_orders'),
-    path('orders/delivered_orders/', DeliveredOrders.as_view(), name='delivered_orders'),
-    path('orders/cancelled_orders/', CancelledOrders.as_view(), name='delivered_orders'),
-    path('orders/confirmed_orders/', ConfirmedOrders.as_view(), name='confirmed_orders'),
-    path('orders/returned_orders/', ReturnedOrders.as_view(), name='returned_orders'),
-    path('orders/refunded_orders/', RefundededOrders.as_view(), name='refunded_orders'),
+    # path('orders/placed_orders/', OrderedOrders.as_view(), name='new_orders'),
+    # path('orders/processed_orders/', ProcessedOrders.as_view(), name='processed_orders'),
+    # path('orders/shipped_orders/', ShippedOrders.as_view(), name='shipped_orders'),
+    # path('orders/delivered_orders/', DeliveredOrders.as_view(), name='delivered_orders'),
+    # path('orders/cancelled_orders/', CancelledOrders.as_view(), name='delivered_orders'),
+    # path('orders/confirmed_orders/', ConfirmedOrders.as_view(), name='confirmed_orders'),
+    # path('orders/returned_orders/', ReturnedOrders.as_view(), name='returned_orders'),
+    # path('orders/refunded_orders/', RefundededOrders.as_view(), name='refunded_orders'),
 
 
     path('accounts/', ListandCreateAdmin.as_view(), name='list_create_admin'),

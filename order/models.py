@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from administrator.utils import STATUS
+from order.utils import generate_order_id
 from product.models import Color, Product, Size
 from customer.models import Customer
 import datetime
@@ -71,6 +72,7 @@ class  Order(models.Model):
         ('refunded', 'refunded'),
     )
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
+    order_id = models.CharField(max_length=15, default=generate_order_id, editable=False)
     user = models.ForeignKey(Customer, on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem, blank=True)
     start_date = models.DateTimeField(auto_now_add=True)
