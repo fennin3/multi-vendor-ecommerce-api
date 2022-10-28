@@ -29,7 +29,7 @@ CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSeri
 from django.db.models import Sum,Count
 from rest_framework.renderers import TemplateHTMLRenderer
 from django_filters import rest_framework as filters
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+# from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from django.contrib.auth import logout
 
@@ -63,7 +63,7 @@ class AdminLogin(APIView):
 
 class AdminProfile(generics.RetrieveAPIView):
     permission_classes = (IsSuperuser,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
 
     def get(self, request):
         print(request.user)

@@ -16,7 +16,7 @@ from rest_framework import status, generics
 from .serializers import AddToCartSerializer, AnnualSerializer, MonthSerializer, OrderItemSerializer
 from customer.permissions import IsCustomer
 
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+# from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from rest_framework.views import APIView
 
@@ -97,7 +97,7 @@ def add_to_cart(request):
 
 class VendorOrder(generics.ListAPIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
     pagination_class = AdminVendorPagination
     filter_backends = (filters.DjangoFilterBackend,)
@@ -130,7 +130,7 @@ class VendorOrder(generics.ListAPIView):
 
 class VendorArrivedOrder(generics.ListAPIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
     serializer_class = OrderItemSerializer
     pagination_class = AdminVendorPagination
     queryset = OrderItem.objects.select_related('item').filter(status="delivered", ordered=True)
@@ -149,7 +149,7 @@ class VendorArrivedOrder(generics.ListAPIView):
 
 class UpdateOrderStatus(APIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
     serializer_class = UpdateOrderStatusSerializer
     
     def patch(self, request):
@@ -167,7 +167,7 @@ class UpdateOrderStatus(APIView):
 
 class DailySalesTotal(APIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
     # serializer_class = UpdateOrderStatusSerializer
     queryset = OrderItem.objects.select_related('item').filter(ordered=True, ordered_date__date=datetime.today())
     
@@ -181,7 +181,7 @@ class DailySalesTotal(APIView):
 
 class MonthlySalesTotal(APIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
     serializer_class = MonthSerializer
     queryset = OrderItem.objects.select_related('item').filter(ordered=True)
     
@@ -205,7 +205,7 @@ class MonthlySalesTotal(APIView):
 
 class AnnualSalesTotal(APIView):
     permission_classes = (IsVendor,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
     serializer_class = AnnualSerializer
     queryset = OrderItem.objects.select_related('item').filter(ordered=True)
     

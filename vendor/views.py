@@ -2,7 +2,7 @@
 import uuid
 from rest_framework import generics, status
 from rest_framework.generics import RetrieveAPIView, CreateAPIView
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+# from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView

@@ -10,7 +10,7 @@ from product.views import AllCatgories, AllSubCatgories, CategoryProducts, Categ
 from vendor.views import CustomUserDetail
 
 # from rest_framework_jwt.blacklist.views import BlacklistView
-from rest_framework_jwt.views import refresh_jwt_token
+from rest_framework_simplejwt.views import token_refresh
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -62,7 +62,7 @@ urlpatterns = [
 
     # path("auth/logout/", Logout.as_view(), name="logout"),
 
-    path('auth/token-refresh/', refresh_jwt_token, name="refresh_token"),
+    path('auth/token-refresh/', token_refresh, name="refresh_token"),
 
     path('visitors/count/', CountVisitor.as_view(), name='count_visitors'),
 

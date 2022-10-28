@@ -4,7 +4,7 @@ from .models import CustomUser, DealOfTheDayRequest, Vendor, ConfirmationCode
 from .tasks import send_confirmation_mail
 
 from rest_framework import serializers, status
-from rest_framework_jwt.settings import api_settings
+# from rest_framework_jwt.settings import api_settings
 
 
 

@@ -2,7 +2,7 @@
 from datetime import datetime
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+# from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,7 +35,7 @@ class CreateCustomer(generics.CreateAPIView):
 # Get details of a vendor
 class CustomerProfile(generics.RetrieveAPIView):
     permission_classes = (IsCustomer,)
-    authentication_class = JSONWebTokenAuthentication
+    # authentication_class = JSONWebTokenAuthentication
 
     def get(self, request):
         customer = get_object_or_404(Customer, user=request.user)

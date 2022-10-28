@@ -1,6 +1,6 @@
 import datetime
 from rest_framework import serializers
-from rest_framework_jwt.settings import api_settings
+# from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from product.models import FlashSale, FlashSaleRequest
@@ -63,7 +63,7 @@ class UserLoginSerializer(serializers.Serializer):
 
         refresh = RefreshToken.for_user(user)
 
-        # refresh.set_exp(from_time=datetime.datetime.now(),lifetime=datetime.timedelta(days=1))
+        refresh.set_exp(lifetime=datetime.timedelta(seconds=30))
 
         update_last_login(None, user)
 
