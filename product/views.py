@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from product.filters import ProductFilter
+from product.filters import CategoryFilter, ProductFilter, SubCategoryFilter
 
 from vendor.models import Vendor
 from vendor.paginations import AdminVendorPagination, CategoryPagination, ClientPagination, CustomPagination
@@ -228,12 +228,16 @@ class AllCatgories(generics.ListAPIView):
     permission_classes =()
     pagination_class = CategoryPagination
     queryset = Category.objects.filter(is_active=True).order_by('name')
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = CategoryFilter
 
 class AllSubCatgories(generics.ListAPIView):
     serializer_class = SubCategorySerializer
     permission_classes =()
     pagination_class = CategoryPagination
     queryset = SubCategory.objects.filter(is_active=True).order_by("name")
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = SubCategoryFilter
 
 
 class CategorySubCategory(generics.ListAPIView):
@@ -241,6 +245,8 @@ class CategorySubCategory(generics.ListAPIView):
     permission_classes =()
     pagination_class = CategoryPagination
     queryset = SubCategory.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = SubCategoryFilter
 
     def get(self, request, uid):
         category = get_object_or_404(Category,slug=uid)
@@ -261,6 +267,8 @@ class CategoryProducts(generics.ListAPIView):
     permission_classes =()
     # pagination_class
     queryset = Product.objects.all().order_by("created_at")
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
 
     def get(self, request, uid):
         category = get_object_or_404(Category,slug=uid)
@@ -280,6 +288,8 @@ class SubCategoryProducts(generics.ListAPIView):
     permission_classes =()
     # pagination_class
     queryset = Product.objects.all().order_by("created_at")
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
 
     def get(self, request, uid):
         subcategory = get_object_or_404(SubCategory,slug=uid)

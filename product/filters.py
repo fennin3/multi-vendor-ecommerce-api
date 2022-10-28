@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from product.models import Product
+from product.models import Category, Product, SubCategory
 
 
 class ProductFilter(filters.FilterSet):
@@ -20,4 +20,18 @@ class ProductFilter(filters.FilterSet):
     class Meta:
         model = Product
         fields = ["category","sub_categories",]
+
+class CategoryFilter(filters.FilterSet):
+    name = filters.CharFilter(lookup_expr='icontains') 
+
+    class Meta:
+        model = Category
+        fields = ()
+
+class SubCategoryFilter(filters.FilterSet):
+    name = filters.CharFilter(lookup_expr='icontains') 
+
+    class Meta:
+        model = SubCategory
+        fields = ()
 
