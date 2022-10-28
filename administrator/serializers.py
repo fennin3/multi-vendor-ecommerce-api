@@ -62,7 +62,7 @@ class UserLoginSerializer(serializers.Serializer):
             raise CustomException({'message':'User account has not been confirmed'})
 
         refresh = RefreshToken.for_user(user)
-        refresh.set_exp(lifetime=datetime.timedelta(minutes=2))
+        refresh.set_exp(lifetime=datetime.timedelta(days=1))
         update_last_login(None, user)
 
         '''

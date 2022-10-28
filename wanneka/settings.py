@@ -1,5 +1,5 @@
 import os
-
+from corsheaders.defaults import default_headers
 from datetime import timedelta
 from dotenv import load_dotenv
 from pathlib import Path
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "order",
     "product",
     "transactions",
+    "blog",
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -313,6 +314,7 @@ CORS_ORIGIN_REGEX_WHITELIST = [
 CORS_ALLOWED_ORIGINS = ["https://*", "http://*"]
 
 CORS_ORIGIN_ALLOW_ALL = True
+
 
 if "DATABASE_URL" in os.environ:
     import dj_database_url
