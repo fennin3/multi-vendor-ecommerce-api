@@ -14,8 +14,11 @@ class ReviewAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("name","uid")
 
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name","uid")
+
 admin.site.register(SubCategory, CategoryAdmin)
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Image)
 admin.site.register(Size)
