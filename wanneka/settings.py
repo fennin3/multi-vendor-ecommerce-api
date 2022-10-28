@@ -114,13 +114,6 @@ JWT_AUTH = {
 }
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    "rest_framework",
     "vendor",
     "customer",
     "administrator",
@@ -128,6 +121,14 @@ INSTALLED_APPS = [
     "product",
     "transactions",
 
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    "rest_framework",
     # External Libraries
     "storages",
     "solo",
