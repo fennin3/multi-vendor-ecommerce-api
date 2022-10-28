@@ -15,7 +15,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ("name","uid")
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name","uid")
+    list_display = ("name","uid","slug")
 
 admin.site.register(SubCategory, CategoryAdmin)
 admin.site.register(Category, CategoryAdmin)
