@@ -12,6 +12,7 @@ from customer.models import ContactMessage, Customer, NewsLetterSubscriber
 from customer.serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, SubscriberSerializer, TestimonialSerializer
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
+from product.filters import CategoryFilter, SubCategoryFilter
 from product.models import Category, Color, DealOfTheDay, FlashSale, FlashSaleRequest, Product, Size, SubCategory
 from product.serializers import CategorySerializer, CategoryUpdateSerializer, ColorSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SizeSerializer, SubCategorySerializer, VisitorSerializer
 from transactions.models import PaymentMethods
@@ -343,6 +344,8 @@ class CategoryViewSet(ModelViewSet):
     permission_classes = (IsSuperuser,)
     lookup_field = 'slug'
     pagination_class = AdminVendorPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = CategoryFilter
 
 class SubCategoryViewSet(ModelViewSet):
     queryset = SubCategory.objects.all().order_by("name")
@@ -350,6 +353,8 @@ class SubCategoryViewSet(ModelViewSet):
     permission_classes = (IsSuperuser,)
     lookup_field = 'slug'
     pagination_class = AdminVendorPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = SubCategoryFilter
 
     def create(self, request):
         serializer = CategorySerializer(data=request.data)

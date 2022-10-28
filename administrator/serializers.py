@@ -63,7 +63,7 @@ class UserLoginSerializer(serializers.Serializer):
 
         refresh = RefreshToken.for_user(user)
 
-        refresh.set_exp(lifetime=datetime.timedelta(hours=24))
+        # refresh.set_exp(from_time=datetime.datetime.now(),lifetime=datetime.timedelta(days=1))
 
         update_last_login(None, user)
 
