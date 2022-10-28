@@ -94,6 +94,7 @@ class VendorSerializer3(serializers.ModelSerializer):
 
 class VendorSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    country = serializers.UUIDField(required=True, allow_null=False)
 
     class Meta:
         model = Vendor

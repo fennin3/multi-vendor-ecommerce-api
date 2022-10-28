@@ -43,7 +43,7 @@ class Country(models.Model):
     tel = models.CharField(max_length=4)
     # has_states = models.BooleanField(default=False)
     # shipping_fee = models.ForeignKey(ShippingFeeZone,on_delete=models.PROTECT,related_name="countries", null=True, blank=True)
-    shipping_zones = models.ManyToManyField(ShippingFeeZone, related_name="countries")
+    shipping_zones = models.ManyToManyField(ShippingFeeZone, related_name="countries", blank=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -131,7 +131,7 @@ class Testimonial(models.Model):
 
 
 class Visitor(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ip = models.CharField(max_length=255)
     visited_at = models.DateTimeField(auto_now_add=True)
 

@@ -69,7 +69,7 @@ class Vendor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, related_name="vendor")
     shop_name = models.CharField(_("shop name"), blank=False, null=False, max_length=250)
     slug = AutoSlugField(populate_from='shop_name',unique=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
     address = models.TextField(null=True, blank=True)
     description = models.TextField(_("description"))
     phone_number = models.CharField(
