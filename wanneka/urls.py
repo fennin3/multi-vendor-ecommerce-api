@@ -7,13 +7,23 @@ from django.conf import settings
 from administrator.views import CountVisitor, ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
 from customer.views import ContactMessageView, ListShippingZonesView, ListTestimonials, SubscribeNewsLetter, VerifyNewsLetterEmail
 from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, ListColors, ListSizes, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
-from vendor.views import CustomUserDetail, Logout
+from vendor.views import CustomUserDetail
 
-from rest_framework_jwt.blacklist.views import BlacklistView
+# from rest_framework_jwt.blacklist.views import BlacklistView
 from rest_framework_jwt.views import refresh_jwt_token
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 
 urlpatterns = [
+    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token-refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+
     path('admin-dashboard/', admin.site.urls),
     path('vendors/', include('vendor.urls')),
     path('customers/', include('customer.urls')),
@@ -48,9 +58,9 @@ urlpatterns = [
 
     path("testimonials/", ListTestimonials.as_view(), name="testimonials"),
 
-    path("auth/logout/", BlacklistView.as_view({"post": "create"})),
+    # path("auth/logout/", BlacklistView.as_view({"post": "create"})),
 
-    path("auth/logout/", Logout.as_view(), name="logout"),
+    # path("auth/logout/", Logout.as_view(), name="logout"),
 
     path('auth/token-refresh/', refresh_jwt_token, name="refresh_token"),
 

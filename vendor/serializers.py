@@ -14,9 +14,7 @@ from django.contrib.auth.models import update_last_login
 
 
 
-
-JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
-JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 
@@ -150,8 +148,7 @@ class UserLoginSerializer(serializers.Serializer):
         elif not user.user_type == 'VENDOR':
             raise CustomException({'message':"You are not authorized as a vendor "}, status_code=status.HTTP_401_UNAUTHORIZED)
 
-        payload = JWT_PAYLOAD_HANDLER(user)
-        jwt_token = JWT_ENCODE_HANDLER(payload)
+        refresh = RefreshToken.for_user(user)
         update_last_login(None, user)
 
         '''
@@ -161,8 +158,7 @@ class UserLoginSerializer(serializers.Serializer):
 
         return {
             'email':user.email,
-            # 'uid':user.uid,
-            'token': jwt_token
+            'token': str(refresh.access_token) + "||" + str(refresh)
         }
 
 class UpdateOrderStatusSerializer(serializers.Serializer):

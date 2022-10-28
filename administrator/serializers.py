@@ -1,3 +1,4 @@
+import datetime
 from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate
@@ -10,10 +11,9 @@ from vendor.serializers import UserSerializer
 from vendor.tasks import send_confirmation_mail
 
 from .models import Administrator, Banner, SiteConfiguration, SiteAddress, ShippingFeeZone, Country, SocialMedia
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
-JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
-JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 class AdminSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -61,8 +61,8 @@ class UserLoginSerializer(serializers.Serializer):
         if not user.is_confirmed:
             raise CustomException({'message':'User account has not been confirmed'})
 
-        payload = JWT_PAYLOAD_HANDLER(user)
-        jwt_token = JWT_ENCODE_HANDLER(payload)
+        refresh = RefreshToken.for_user(user)
+        refresh.set_exp(lifetime=datetime.timedelta(days=1))
         update_last_login(None, user)
 
         '''
@@ -72,7 +72,7 @@ class UserLoginSerializer(serializers.Serializer):
         
         return {
             'email':user.email,
-            'token': jwt_token
+            'token': str(refresh.access_token) + "||" + str(refresh)
         }
 
 class SiteAddressSerializer(serializers.ModelSerializer):

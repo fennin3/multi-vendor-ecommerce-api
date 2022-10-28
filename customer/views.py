@@ -117,7 +117,8 @@ class CustomerLogin(CreateAPIView):
             'success' : 'True',
             'status_code' : status.HTTP_200_OK,
             'message': 'User logged in  successfully',
-            'token' : serializer.data['token'],
+            'token' : str(serializer.data['token']).split('||')[0],
+            'refresh':str(serializer.data['token']).split('||')[1]
             }
         status_code = status.HTTP_200_OK
 

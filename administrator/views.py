@@ -52,7 +52,8 @@ class AdminLogin(APIView):
             'status_code' : status.HTTP_200_OK,
             'message': 'User logged in  successfully',
             'uid':uid,
-            'token' : serializer.data['token'],
+            'token' : str(serializer.data['token']).split('||')[0],
+            'refresh':str(serializer.data['token']).split('||')[1]
             }
         status_code = status.HTTP_200_OK
 

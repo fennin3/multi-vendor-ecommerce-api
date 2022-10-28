@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from administrator.permissions import IsSuperuser
 from administrator.serializers import FlashSaleRequestSerializer2
-from rest_framework_jwt.blacklist.models import BlacklistedToken
+# from rest_framework_jwt.blacklist.models import BlacklistedToken
 
 # from administrator.permissions import IsSuperuser
 
@@ -110,7 +110,8 @@ class VendorLogin(APIView):
             'status_code' : status.HTTP_200_OK,
             'message': 'User logged in  successfully',
             'uid':uid,
-            'token' : serializer.data['token'],
+            'token' : str(serializer.data['token']).split('||')[0],
+            'refresh':str(serializer.data['token']).split('||')[1]
             }
         status_code = status.HTTP_200_OK
 
@@ -209,12 +210,7 @@ class Logout(APIView):
     def post(self, request):
         token = str(request.headers.get("Authorization")).split(" ")[1]
 
-        blcklst = BlacklistedToken.objects.create(
-            user = request.user,
-            token = token,
-            token_id = uuid.uuid4(),
-            expires_at = datetime.now() + timedelta(days=1)
-        )
+        
         logout(request)
 
         return Response(
@@ -222,19 +218,5 @@ class Logout(APIView):
         )
 
 
-class TokenRefresh(APIView):
-    def post(self, request):
-        token = str(request.headers.get("Authorization")).split(" ")[1]
-
-        blcklst = BlacklistedToken.objects.create(
-            user = request.user,
-            token = token,
-            token_id = uuid.uuid4(),
-            expires_at = datetime.now() + timedelta(days=1)
-        )
-
-        return Response(
-            {"message":"logged out successfully"}, status=status.HTTP_200_OK
-        )
 
 
