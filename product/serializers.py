@@ -9,43 +9,47 @@ from .models import Category, Color, DealOfTheDay, FlashSale, Product, Image, Su
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    is_active = serializers.BooleanField(default=True)
     class Meta:
         model = SubCategory
         fields = "__all__"
 
-        extra_kwargs = {
-            "is_active":{"read_only":True}
-        }
+        # extra_kwargs = {
+        #     "is_active":{"read_only":True}
+        # }
 
 class CategoryUpdateSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(required=False)
     category = serializers.CharField(max_length=255, required=False)
+    is_active = serializers.BooleanField(default=True)
     class Meta:
         model = SubCategory
         fields = "__all__"
 
-        extra_kwargs = {
-            "is_active":{"read_only":True}
-        }
+        # extra_kwargs = {
+        #     "is_active":{"read_only":True}
+        # }
 
 class MainCategorySerializer(serializers.ModelSerializer):
+    is_active = serializers.BooleanField(default=True)
     class Meta:
         model = Category
         fields="__all__"
 
-        extra_kwargs = {
-            "is_active":{"read_only":True}
-        }
+        # extra_kwargs = {
+        #     "is_active":{"read_only":True}
+        # }
 
 class SubCategorySerializer(serializers.ModelSerializer):
+    is_active = serializers.BooleanField(default=True)
     category = MainCategorySerializer(read_only=True)
     class Meta:
         model = SubCategory
         fields = "__all__"
 
-        extra_kwargs = {
-            "is_active":{"read_only":True}
-        }
+        # extra_kwargs = {
+        #     "is_active":{"read_only":True}
+        # }
 
     
 
