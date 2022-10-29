@@ -364,11 +364,11 @@ class SubCategoryViewSet(ModelViewSet):
 
         return Response(self.serializer_class(data).data,status=status.HTTP_201_CREATED)
 
-    def partial_update(self,request, uid):
+    def partial_update(self,request, slug):
         serializer = CategoryUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        sub_cat = get_object_or_404(SubCategory, uid=uid)
+        sub_cat = get_object_or_404(SubCategory, slug=slug)
 
         sub_cat = serializer.update(sub_cat,serializer.validated_data)
 
