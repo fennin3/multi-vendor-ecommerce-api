@@ -1,15 +1,15 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from blog.views import ArticleCategoryModelViewset, ArticleModelViewset, CommentModelViewset, CommentReplyModelViewset
+from blog.views import ClientArticleCategoryModelViewset, ClientArticleModelViewset, ClientCommentModelViewset, ClientCommentReplyModelViewset
 
 
 router = routers.DefaultRouter(trailing_slash=True)
 
-router.register(r'articles', ArticleModelViewset)
-router.register(r'categories', ArticleCategoryModelViewset)
-router.register(r'comments', CommentModelViewset)
-router.register(r'replies', CommentReplyModelViewset)
+router.register(r'articles', ClientArticleModelViewset)
+router.register(r'categories', ClientArticleCategoryModelViewset)
+router.register(r'comments', ClientCommentModelViewset)
+router.register(r'replies', ClientCommentReplyModelViewset)
 
 urlpatterns = [
     path('', include(router.urls)),

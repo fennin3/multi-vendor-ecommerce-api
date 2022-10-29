@@ -8,6 +8,8 @@ from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, Ad
  RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
+from blog.views import ArticleCategoryModelViewset, ArticleModelViewset, CommentModelViewset, CommentReplyModelViewset
+
 
 router = routers.DefaultRouter(trailing_slash=True)
 router.register(r'vendors', VendorViewSet)
@@ -22,6 +24,12 @@ router.register(r'testimonials', TestimonialViewSet)
 router.register(r'social-media', SocialMediaViewSet)
 router.register(r'sizes', SizeModelViewset)
 router.register(r'colors', ColorModelViewset)
+
+router.register(r'blog/articles', ArticleModelViewset)
+
+router.register(r'blog/categories', ArticleCategoryModelViewset)
+router.register(r'blog/comments', CommentModelViewset)
+router.register(r'blog/replies', CommentReplyModelViewset)
 
 
 
