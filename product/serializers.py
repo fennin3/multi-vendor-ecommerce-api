@@ -20,7 +20,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class CategoryUpdateSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(required=False)
-    category = serializers.CharField(max_length=255, required=False)
+    # category = serializers.CharField(max_length=255, required=False)
     is_active = serializers.BooleanField(default=True)
     class Meta:
         model = SubCategory
