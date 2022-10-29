@@ -31,6 +31,7 @@ urlpatterns = [
     path('products/', include('product.urls')),
     path('transactions/',include('transactions.urls')),
     path('orders/',include('order.urls')),
+    path('blog/',include('blog.urls')),
 
     # General Info
     path('countries/', ListCountries.as_view(), name="countries"),

@@ -1002,11 +1002,6 @@ class CountVisitor(generics.CreateAPIView):
     permission_classes = ()
     serializer_class = VisitorSerializer
 
-# class Logout(APIView):
-    
-#     def post(self, request):
-#         logout(request)
 
-#         return Response({
-#             "message":"Logged out successfully"
-#         }, status=status.HTTP_200_OK)
+
+
