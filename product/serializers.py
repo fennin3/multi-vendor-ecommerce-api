@@ -63,7 +63,7 @@ class ImageSerializer(serializers.ModelSerializer):
 class ProductSerializer2(serializers.ModelSerializer):
     sub_categories = serializers.ListField(child=serializers.CharField())
     thumbnail = serializers.ImageField()
-    images = serializers.ListField(child=serializers.ImageField(), required=True, allow_null=False)
+    images = serializers.ListField(child=serializers.ImageField(), required=False, allow_null=True)
     sizes = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True)
     colors = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True)
     

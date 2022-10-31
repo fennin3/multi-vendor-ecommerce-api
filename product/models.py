@@ -111,11 +111,11 @@ class Product(models.Model):
             self.thumbnail = self.make_thumbnail(self.thumbnail)
             self.thumbnail_created = True
 
-        if self.discount > 0.00:
+        if float(self.discount) > 0.00:
             if self.discount_type == "AMT":
-                self.discounted_price = self.price - self.discount
+                self.discounted_price = float(self.price) - float(self.discount)
             else:
-                self.discounted_price  = self.price - (self.price * self.discount)
+                self.discounted_price  = float(self.price) - (float(self.price) * float(self.discount))
         super(Product, self).save(*args, **kwargs)
 
     def make_thumbnail(self, image, size=(350, 350)):

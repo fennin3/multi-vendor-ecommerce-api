@@ -12,6 +12,7 @@ class ProductFilter(filters.FilterSet):
     colors_name = filters.CharFilter(field_name='colors__name',lookup_expr='iexact')
     rating_min = filters.NumberFilter(field_name='rating', lookup_expr='gte')
     rating_max = filters.NumberFilter(field_name='rating', lookup_expr='lte')
+    sub_categories = filters.UUIDFilter(field_name="sub_categories")
     sort_by = filters.OrderingFilter(fields=(
             ('name', 'name'),
             ('price', 'price'),
@@ -19,7 +20,7 @@ class ProductFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ["category","sub_categories",]
+        fields = ("category",)
 
 class CategoryFilter(filters.FilterSet):
     name = filters.CharFilter(lookup_expr='icontains') 

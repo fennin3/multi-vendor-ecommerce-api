@@ -15,6 +15,7 @@ class ProductFilter(filters.FilterSet):
     rating_max = filters.NumberFilter(field_name='rating', lookup_expr='lte')
     is_active = filters.BooleanFilter()
     is_approved = filters.BooleanFilter()
+    sub_categories = filters.UUIDFilter(field_name="sub_categories")
     date = filters.DateTimeFromToRangeFilter(field_name='created_at')
     sort_by = filters.OrderingFilter(fields=(
             ('name', 'name'),
