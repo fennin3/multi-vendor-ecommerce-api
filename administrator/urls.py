@@ -9,6 +9,7 @@ from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, Ad
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 from blog.views import ArticleCategoryModelViewset, ArticleModelViewset, CommentModelViewset, CommentReplyModelViewset
+from coupons.views import CouponAdminModelViewset
 
 
 router = routers.DefaultRouter(trailing_slash=True)
@@ -24,6 +25,7 @@ router.register(r'testimonials', TestimonialViewSet)
 router.register(r'social-media', SocialMediaViewSet)
 router.register(r'sizes', SizeModelViewset)
 router.register(r'colors', ColorModelViewset)
+router.register(r'coupons', CouponAdminModelViewset)
 
 router.register(r'blog/articles', ArticleModelViewset)
 

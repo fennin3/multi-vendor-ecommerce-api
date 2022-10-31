@@ -9,7 +9,7 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 
@@ -21,5 +21,5 @@ class PaymentMethodSerializer2(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }

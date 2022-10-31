@@ -88,7 +88,7 @@ class SocialMediaSerializer(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 
@@ -135,7 +135,7 @@ class ShippingFeeZoneSerializer(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -146,7 +146,7 @@ class CountrySerializer(serializers.ModelSerializer):
         fields="__all__"
     
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 class CountrySerializer2(serializers.ModelSerializer):
@@ -156,7 +156,7 @@ class CountrySerializer2(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 class CountrySerializer3(serializers.ModelSerializer):
@@ -169,7 +169,7 @@ class CountrySerializer3(serializers.ModelSerializer):
 
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 
@@ -201,7 +201,7 @@ class BannerSerializer(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 class BannerSerializer2(serializers.ModelSerializer):
@@ -210,7 +210,7 @@ class BannerSerializer2(serializers.ModelSerializer):
         fields="__all__"
 
     extra_kwargs ={
-        "is_active":{"read_ony":True}
+        "is_active":{"default":True}
     }
 
 

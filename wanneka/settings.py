@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "product",
     "transactions",
     "blog",
+    "coupons",
 
     'django.contrib.admin',
     'django.contrib.auth',

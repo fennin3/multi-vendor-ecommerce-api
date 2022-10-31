@@ -94,7 +94,7 @@ class VariantSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -104,7 +104,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
 
 
@@ -154,7 +154,7 @@ class DealOfTheDaySerializer(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True},
+            "is_active":{"default":True},
             "in_stock":{"read_only":True}
         }
 
@@ -165,7 +165,7 @@ class FlashSaleSerializer(serializers.ModelSerializer):
         fields="__all__"
 
         extra_kwargs = {
-            "is_active":{"read_only":True}
+            "is_active":{"default":True}
         }
         
 
