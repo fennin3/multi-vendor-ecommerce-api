@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from administrator.utils import STATUS
+from coupons.models import Coupon
 from order.utils import generate_order_id
 from product.models import Color, Product, Size
 from customer.models import Customer
@@ -78,7 +79,7 @@ class  Order(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
     paid_amount = models.FloatField(blank=True, null=True)
-    used_coupon = models.CharField(max_length=50, blank=True, null=True)
+    coupons = models.ManyToManyField(Coupon, blank=True)
     transaction_ref = models.CharField(max_length=255,blank=True, null=True)
 
     # Shipping address
