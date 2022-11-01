@@ -73,7 +73,7 @@ class  Order(models.Model):
     )
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     order_id = models.CharField(max_length=15, default=generate_order_id, editable=False)
-    user = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    user = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders")
     items = models.ManyToManyField(OrderItem, blank=True)
     start_date = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
@@ -100,7 +100,7 @@ class  Order(models.Model):
     returned_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return f"Order by {self.uid}"
+        return f"Order  {self.uid}"
 
 
 

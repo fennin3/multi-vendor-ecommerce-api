@@ -37,7 +37,8 @@ class UserSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},
             "date_joined": {"read_only": True},
             "is_confirmed": {"read_only": True},
-            "user_type": {"read_only": True}
+            "user_type": {"read_only": True},
+            "avatar": {"required": False}
         }
 
     def create(self, validated_data):
@@ -92,8 +93,6 @@ class VendorSerializer3(serializers.ModelSerializer):
 
 class VendorSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    # country = serializers.UUIDField(required=True, allow_null=False)
-
     class Meta:
         model = Vendor
         fields = ("user", "shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')

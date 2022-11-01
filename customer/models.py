@@ -7,7 +7,7 @@ from product.models import Product
 from vendor.models import CustomUser
 
 class Customer(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, related_name="customer")
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     city = models.CharField(max_length=255)
     address = models.TextField(_("address"), null=True, blank=True)
@@ -20,6 +20,15 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.user.email
+
+    def is_newbie(self):
+        if self.orders.all().count() > 0:
+            return False
+        else:
+            return True
+
+    def total_orders(self):
+        return self.orders.all().count()
 
 
 class ContactMessage(models.Model):

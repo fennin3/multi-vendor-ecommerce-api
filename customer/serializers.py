@@ -24,19 +24,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 User = get_user_model()
 
 
-class CustomerSerializer2(serializers.ModelSerializer):
-    country = serializers.UUIDField(required=False)
-    city = serializers.CharField(max_length=255,required=False)
-    phone_number = serializers.CharField(max_length=16, required=False)
-    class Meta:
-        model=Customer
-        fields = ("address","country", "city", "phone_number")
-
-class CustomerSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    class Meta:
-        model = Customer
-        fields = ("user", "address","country", "city", "phone_number")
+# class CustomerSerializer2(serializers.ModelSerializer):
+#     country = serializers.UUIDField(required=False)
+#     city = serializers.CharField(max_length=255,required=False)
+#     phone_number = serializers.CharField(max_length=16, required=False)
+#     class Meta:
+#         model=Customer
+#         fields = ("address","country", "city", "phone_number")
 
 class CustomerSerializer2(serializers.ModelSerializer):
     # user = UserSerializer()
@@ -50,6 +44,13 @@ class CustomerSerializer2(serializers.ModelSerializer):
             "city":{"required":False}, 
             "phone_number":{"required":False}, 
         }
+        
+
+class CustomerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = Customer
+        fields = ("user", "address","country", "city", "phone_number")
 
 
     def create(self, validated_data):

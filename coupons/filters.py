@@ -10,8 +10,6 @@ class CouponFilter(filters.FilterSet):
     min_available = filters.NumberFilter(field_name="available_coupons", lookup_expr="gte")
     max_available = filters.NumberFilter(field_name="available_coupons", lookup_expr="lte")
 
-
-
     sort_by = filters.OrderingFilter(fields=(
             ('title', 'title'),
             ('created_at', 'created_at'),
@@ -19,4 +17,4 @@ class CouponFilter(filters.FilterSet):
 
     class Meta:
         model = Coupon
-        fields = ("category","is_active", "condition", "sub_category","discount_type", "available_coupons")
+        fields = ("product","is_active", "condition", "discount_type", "available_coupons")

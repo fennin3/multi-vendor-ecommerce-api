@@ -1,16 +1,12 @@
-from django.urls import path,include
-from rest_framework import routers
-
-from coupons.views import CouponAdminModelViewset
+from django.urls import path
+from coupons.views import ClientCouponListView, CartCouponListView
 
 
-router = routers.DefaultRouter(trailing_slash=True)
-
-router.register(r'coupons', CouponAdminModelViewset)
 
 # router.register(r'articles', ClientArticleModelViewset)
 
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("",ClientCouponListView.as_view(), name="all_coupons"),
+    path("order/<uid>/",CartCouponListView.as_view(), name="all_coupons_cart"),
 ]
