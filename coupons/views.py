@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 from coupons.filters import CouponFilter
 
 from coupons.models import Coupon, UsedCoupon
-from coupons.serializers import CouponSerializer
+from coupons.serializers import ApplyCouponSerializer, CouponSerializer
 from administrator.permissions import IsSuperuser
 from order.models import Order
 from vendor.paginations import AdminVendorPagination, ClientPagination
@@ -15,6 +15,8 @@ from itertools import chain
 import datetime
 from django.db.models import Q
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
 
 class CouponAdminModelViewset(ModelViewSet):
     serializer_class = CouponSerializer
@@ -89,3 +91,35 @@ class CartCouponListView(ListAPIView):
 
         serializer = self.serializer_class(results, many=True, context={'request': request})
         return Response(serializer.data)
+
+class ApplyCoupon(APIView):
+    permission_classes = (IsCustomer,)
+    serializer_class = ApplyCouponSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        order = get_object_or_404(Order,uid=serializer.data['order_uid'])
+        coupon = get_object_or_404(Coupon, code=serializer.data['code'])
+
+        success,message = coupon.can_use(user=request.user,order=order)
+        
+        if success:     
+            order.coupon_used = coupon
+            order.save()
+
+            return Response(
+                {
+                    "message":"Successful"
+                },status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {
+                    "message":message
+                }, status=status.HTTP_400_BAD_REQUEST
+            )
+
+

@@ -1,9 +1,11 @@
 from django.db import models
 import uuid
 from coupons.utils import generate_coupon_code
-from product.models import Category, Product, SubCategory
+from product.models import Product
 from django.contrib.auth import get_user_model
-
+from itertools import chain
+import datetime
+from django.db.models import Q 
 
 User = get_user_model()
 
@@ -72,3 +74,32 @@ class Coupon(models.Model):
     def used_coupons(self):
         used_coupons = UsedCoupon.objects.filter(coupon_code=self.code)
         return used_coupons
+
+    def can_use(self, user, order):
+        queryset = Coupon.objects.filter(Q(expire_at__gt=datetime.datetime.now())|Q(expire_at=None), is_active=True)
+        if UsedCoupon.objects.filter(user=user).count() == self.no_times:
+            return False,"Sorry, you have exceeded the number of times you can use this coupon"
+        else:
+            customer = user.customer  
+            used_coupons = UsedCoupon.objects.filter(user=user)
+
+            coupons1 = []
+
+            if customer.is_newbie():
+                coupons1 = queryset.filter(condition="newbies")
+
+            coupons2 = queryset.filter(condition="orders", min_orders__lte=customer.total_orders())
+
+            coupons3 = queryset.filter(condition="amount", min_amount__lte=order.get_total())
+
+            coupons4 = queryset.filter(condition="product", product__in=[item.item for item in order.items.all()])
+
+            coupons5 = queryset.filter(condition="shipping")
+
+            # merging querysets
+            coupons = sorted(chain(coupons1,coupons2, coupons3, coupons4,coupons5), key=lambda instance: instance.discount_amount, reverse=True)
+            results = [coupon for coupon in coupons if not used_coupons.filter(coupon_code=coupon.code).exists() or used_coupons.filter(coupon_code=coupon.code).count() < coupon.no_times]
+            if self in results:
+                return True,""
+            else:
+                return False,"You can not use this coupon"

@@ -84,12 +84,14 @@ class SiteConfiguration(SingletonModel):
     maintenance_mode = models.BooleanField(default=False)
     phone_number = models.TextField(null=False, blank=True)
     site_email = models.EmailField(null=False, blank=True)
+    site_percentage = models.DecimalField(max_digits=9,decimal_places=2, default=5.0)
     appstore_link = models.URLField(blank=True)
     playstore_link = models.URLField(blank=True)
     note = models.TextField(null=False, blank=True)
     working_hours = models.TextField(blank=True, null=True)
     addresses = models.ManyToManyField(SiteAddress,blank=True)
     # social_media = models.ManyToManyField(SocialMedia,blank=True)
+
 
     def __str__(self):
         return "Site Configuration"
@@ -139,3 +141,7 @@ class Visitor(models.Model):
         return f"{self.ip} -   visited site at   -   {self.visited_at}"
 
 
+# class PaymentMethod(models.Model):
+#     uid = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+#     title = models.CharField(max_length=1000)
+#     description = models.TextField(blank=True,null=True)

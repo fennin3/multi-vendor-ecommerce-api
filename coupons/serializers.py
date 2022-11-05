@@ -1,4 +1,5 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer,Serializer
+from rest_framework import serializers
 
 from coupons.models import Coupon, UsedCoupon
 
@@ -17,3 +18,7 @@ class CouponUsedSerializer(ModelSerializer):
     class Meta:
         model = UsedCoupon
         fields="__all__"
+
+class ApplyCouponSerializer(Serializer):
+    order_uid = serializers.UUIDField()
+    code = serializers.CharField()

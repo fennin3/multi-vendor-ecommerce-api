@@ -4,8 +4,8 @@ from rest_framework import routers
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
  ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CategoryViewSet, ColorModelViewset, ConfirmAccount, CountryView, CountsAnalytics, 
  CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, 
- DisapproveProduct, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, ProductViewSet, \
- RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
+ DisapproveProduct, ListAddress, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, ProductViewSet, \
+ RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, RevenueBasedonArea, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
 from blog.views import ArticleCategoryModelViewset, ArticleModelViewset, CommentModelViewset, CommentReplyModelViewset
@@ -84,6 +84,7 @@ urlpatterns = [
     path('orders/analytics/yearly/', AnnualOrdersSummary.as_view(), name="year_summary"),
 
     path('orders/analytics/counts/', CountsAnalytics.as_view(), name="summary_counts"),
+    path('orders/analytics/area-revenue/', RevenueBasedonArea.as_view(), name="summary_counts"),
 
     
     
@@ -93,6 +94,7 @@ urlpatterns = [
     path('deals/', ApproveDOTD.as_view(), name='approve_deals'),
     path('deals/<uid>/', RetrieveRemoveUpdateDOTD.as_view(), name='update_retrieve'),
     # path('deals/decline/', DeclineDOTDRequest.as_view(), name='decline_deals'),
+    path('addresses/', ListAddress.as_view(), name='list_address'),
     path('add-address/', AddSiteAddress.as_view(), name='add_address'),
     path('add-address/<pk>/', UpdateAddress.as_view(), name='add_address'),
     path('update-address/', UpdateAddress.as_view(), name='update_address'),

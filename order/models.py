@@ -1,4 +1,5 @@
 import uuid
+import django
 from django.db import models
 from administrator.utils import STATUS
 from coupons.models import Coupon
@@ -7,11 +8,25 @@ from product.models import Color, Product, Size
 from customer.models import Customer
 import datetime
 from decimal import Decimal, getcontext
-
-
+from administrator.models import Country
+from django.contrib.auth import get_user_model
 
 getcontext().prec = 2
+User = get_user_model()
 
+class ShippingAddress(models.Model):
+    uid = models.UUIDField(primary_key=True, default= uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="shipping_addressed")
+    recipient_name = models.CharField(max_length=1000)
+    email = models.EmailField(max_length=100,blank=True, null=True)
+    phone = models.CharField(max_length=16)    
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    address = models.TextField(blank=True, null=True)
+    default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.recipient_name
+    
 
 class OrderItem(models.Model):
     STATUS_CHOICES = (
@@ -79,16 +94,22 @@ class  Order(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
     paid_amount = models.FloatField(blank=True, null=True)
-    coupons = models.ManyToManyField(Coupon, blank=True)
+    coupon_used = models.ForeignKey(Coupon,null=True, blank=True, on_delete=models.CASCADE)
     transaction_ref = models.CharField(max_length=255,blank=True, null=True)
 
-    # Shipping address
-    recipient_name = models.CharField(max_length=100,blank=True, null=True)
-    email = models.CharField(max_length=100,blank=True, null=True)
-    address = models.CharField(max_length=100,blank=True, null=True)
-    phone = models.CharField(max_length=100,blank=True, null=True)
     ordered = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    shipping_address = models.ForeignKey(ShippingAddress, null=True, blank=True, on_delete=models.SET_NULL)
+
+    # Shipping Details
+    recipient_name = models.CharField(max_length=1000,null=True,blank=True)
+    email = models.EmailField(max_length=100,blank=True, null=True)
+    phone = models.CharField(max_length=16, null=True,blank=True)    
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True,blank=True)
+    address = models.TextField(blank=True, null=True)
+
+    # Paymment Method
+    payment_method = models.JSONField(null=True, blank=True)
     
     # Dates
     ordered_date = models.DateTimeField(blank=True,null=True)
@@ -109,6 +130,11 @@ class  Order(models.Model):
         total = 0
         for order_item in self.items.all():
             total += order_item.total_amount
+
+        if self.coupon_used.discount_type == "PCT":
+            total -= (total * (self.coupon_used.discount_amount/100))
+        else:
+            total -= self.coupon_used.discount_amount
         return total
 
 

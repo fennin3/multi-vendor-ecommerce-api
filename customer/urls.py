@@ -2,13 +2,15 @@ from django.urls import path
 
 from product.views import RetrieveFlashSale
 
-from .views import ConfirmAccount, CustomerLogin, CustomerProfileUpdate, RetrieveAllBanners, RetrieveDealOfTheDay, WishListRetrieveDeleteViews, WishListViews
+from .views import ConfirmAccount, CustomerLogin, CustomerProfileUpdate, RetrieveAllBanners, \
+RetrieveDealOfTheDay, WishListRetrieveDeleteViews, WishListViews,CreateCustomer, CustomerProfile
 
-from .views import CreateCustomer, CustomerProfile
-
+from order.views import CreateListShippingAddressView, RetrieveUpdateDeleteShippingAddressView
 
 urlpatterns = [
     path('', CreateCustomer.as_view(), name='all_vendors'),
+    path('addresses/', CreateListShippingAddressView.as_view(), name='shipping_address'),
+    path('addresses/<uid>/', RetrieveUpdateDeleteShippingAddressView.as_view(), name='shipping_address_detail'),
     path('profile/', CustomerProfile.as_view(), name='customer_dashboard'),
     path('profile/update/', CustomerProfileUpdate.as_view(), name='customer_dashboard'),
     path('confirm-account/', ConfirmAccount.as_view(), name='confirm_account'),

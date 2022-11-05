@@ -15,7 +15,7 @@ from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
 from product.filters import CategoryFilter, SubCategoryFilter
 from product.models import Category, Color, DealOfTheDay, FlashSale, FlashSaleRequest, Product, Size, SubCategory
 from product.serializers import CategorySerializer, CategoryUpdateSerializer, ColorSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SizeSerializer, SubCategorySerializer, VisitorSerializer
-from transactions.models import PaymentMethods
+from transactions.models import PaymentMethods, SaleIncome
 from transactions.serializers import PaymentMethodSerializer2
 from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
 from vendor.paginations import AdminVendorPagination
@@ -136,6 +136,12 @@ class UpdateAddress(generics.RetrieveUpdateDestroyAPIView):
     permission_classes =(IsSuperuser,)
     serializer_class = SiteAddressSerializer
     queryset = SiteAddress.objects.all()
+
+class ListAddress(generics.ListAPIView):
+    permission_classes =(IsSuperuser,)
+    serializer_class = SiteAddressSerializer
+    queryset = SiteAddress.objects.all()
+    pagination_class = AdminVendorPagination
 
 # Confirm user account
 class ConfirmAccount(generics.GenericAPIView):
@@ -656,13 +662,27 @@ class CountsAnalytics(APIView):
         }, status=status.HTTP_200_OK)
 
 
-# class RevenueBasedonArea(APIView):
-#     permission_classes = (IsSuperuser,)
-#     # queryset = Order.objects.all()
-#     serializer_class = AnnualSerializer
 
-#     def get(self, request):
-#         pass
+class RevenueBasedonArea(APIView):
+    permission_classes = (IsSuperuser,)
+    queryset = SaleIncome.objects.filter(income_for="admin")
+    serializer_class = AnnualSerializer
+    
+
+    def get(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        sales = self.queryset.filter(created_at__date__year=serializer.data['year'])
+        total = sales.aaggregate(total=Sum('amount'))
+
+        data = sales.values_list("country__name").annotate(total=Sum('amount'))
+
+        return Response({
+            'orders':sales.count(),
+            "annual_total":total['total'],
+            "data":data
+        }, status=status.HTTP_200_OK)
 
 
 class RetrieveUpdateDestroyAdminView(generics.RetrieveUpdateDestroyAPIView):
@@ -1001,7 +1021,5 @@ class CountVisitor(generics.CreateAPIView):
     model = Visitor
     permission_classes = ()
     serializer_class = VisitorSerializer
-
-
 
 
