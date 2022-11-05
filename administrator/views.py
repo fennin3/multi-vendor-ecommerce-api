@@ -88,7 +88,7 @@ class GetSiteInfo(APIView):
     serializer_class = SiteConfigSerializer
 
     def get(self,request):
-        config = SiteConfiguration.objects.get()
+        config = SiteConfiguration.get_solo()
         serializer = self.serializer_class(config)
         return Response(
             serializer.data,status=status.HTTP_200_OK
