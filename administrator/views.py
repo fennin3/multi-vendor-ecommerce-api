@@ -24,7 +24,7 @@ from rest_framework.generics import ListAPIView
 from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, SocialMedia, Testimonial, Visitor
 from .permissions import IsSuperuser
 from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, BannerSerializer, CountrySerializer2,
-CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteConfigSerializer, SocialMediaSerializer,
+CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteAddressSerializer2, SiteAddressSerializer3, SiteConfigSerializer, SocialMediaSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum,Count
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -114,7 +114,7 @@ class UpdateSiteInfo(APIView):
 
 class AddSiteAddress(APIView):
     permission_classes =(IsSuperuser,)
-    serializer_class = SiteAddressSerializer
+    serializer_class = SiteAddressSerializer2
 
 
     def post(self,request):
@@ -122,8 +122,15 @@ class AddSiteAddress(APIView):
 
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        data['coordinates'] =  {
+                "latitude":serializer.data.get('latitude',None),
+                "longitude":serializer.data.get('longitude',None)
+            }
+        data.pop("longitude")
+        data.pop("latitude")
 
-        address = serializer.create(serializer.validated_data)
+        address = serializer.create(data)
 
         config.addresses.add(address)
         config.save()
@@ -136,6 +143,26 @@ class UpdateAddress(generics.RetrieveUpdateDestroyAPIView):
     permission_classes =(IsSuperuser,)
     serializer_class = SiteAddressSerializer
     queryset = SiteAddress.objects.all()
+
+    def partial_update(self, request, pk):
+        address = get_object_or_404(SiteAddress,pk=pk)
+
+        serializer = SiteAddressSerializer3(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+        data['coordinates'] =  {
+                "latitude":serializer.data.get('latitude',None),
+                "longitude":serializer.data.get('longitude',None)
+            }
+        data.pop("longitude")
+        data.pop("latitude")
+
+        address = serializer.update(instance=address,validated_data=data)
+
+        return Response(SiteAddressSerializer(address).data)
+
+
 
 class ListAddress(generics.ListAPIView):
     permission_classes =(IsSuperuser,)

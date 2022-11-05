@@ -78,9 +78,36 @@ class UserLoginSerializer(serializers.Serializer):
         }
 
 class SiteAddressSerializer(serializers.ModelSerializer):
+    # coordinat
     class Meta:
         model = SiteAddress
         fields="__all__"
+
+
+class SiteAddressSerializer2(serializers.ModelSerializer):
+    longitude = serializers.CharField(max_length=255,required=False, allow_null=True)
+    latitude = serializers.CharField(max_length=255,required=False, allow_null=True)
+    coordinates = serializers.JSONField(required=False, allow_null=True)
+    class Meta:
+        model = SiteAddress
+        fields="__all__"
+
+class SiteAddressSerializer3(serializers.ModelSerializer):
+    longitude = serializers.CharField(max_length=255,required=False, allow_null=True)
+    latitude = serializers.CharField(max_length=255,required=False, allow_null=True)
+    coordinates = serializers.JSONField(required=False, allow_null=True)
+
+    class Meta:
+        model = SiteAddress
+        fields="__all__"
+
+        extra_kwargs = {
+            "title":{"required":False,"allow_null":True},
+            "email":{"required":False,"allow_null":True},
+            "phone_number":{"required":False,"allow_null":True},
+            "location":{"required":False,"allow_null":True},
+            "image":{"required":False,"allow_null":True}
+        }
 
 class SocialMediaSerializer(serializers.ModelSerializer):
     class Meta:
