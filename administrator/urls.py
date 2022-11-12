@@ -1,10 +1,10 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
+from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualIncomeSummary, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
  ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CategoryViewSet, ColorModelViewset, ConfirmAccount, CountryView, CountsAnalytics, 
- CreateListShippingZonesView, CustomerViewSet, DailyOrdersSummary, 
- DisapproveProduct, ListAddress, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyOrdersSummary, ProductViewSet, \
+ CreateListShippingZonesView, CustomerViewSet, DailyIncomeSummary, DailyOrdersSummary, 
+ DisapproveProduct, ListAddress, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyIncomeSummary, MonthlyOrdersSummary, ProductViewSet, \
  RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, RevenueBasedonArea, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
@@ -79,11 +79,19 @@ urlpatterns = [
     path('customers/<uid>/status/', ActiveCustomer.as_view(), name='customer_status'),
     path('customers/<uid>/orders/', RetrieveCustomerOrder.as_view(), name='customer_orders'),
 
-    path('orders/analytics/daily/', DailyOrdersSummary.as_view(), name="daily_summary"),
-    path('orders/analytics/monthly/', MonthlyOrdersSummary.as_view(), name="monthly_summary"),
-    path('orders/analytics/yearly/', AnnualOrdersSummary.as_view(), name="year_summary"),
+    path('orders/analytics/daily-sale/', DailyOrdersSummary.as_view(), name="daily_summary"),
+    path('orders/analytics/daily-income/', DailyIncomeSummary.as_view(), name="daily_summary"),
+
+    path('orders/analytics/monthly-sale/', MonthlyOrdersSummary.as_view(), name="monthly_summary"),
+    path('orders/analytics/monthly-income/', MonthlyIncomeSummary.as_view(), name="monthly_summary"),
+
+    path('orders/analytics/yearly-sale/', AnnualOrdersSummary.as_view(), name="year_summary"),
+    path('orders/analytics/yearly-income/', AnnualIncomeSummary.as_view(), name="year_summary"),
 
     path('orders/analytics/counts/', CountsAnalytics.as_view(), name="summary_counts"),
+    
+
+    
     path('orders/analytics/area-revenue/', RevenueBasedonArea.as_view(), name="summary_counts"),
 
     

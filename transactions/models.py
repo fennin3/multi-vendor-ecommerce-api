@@ -24,7 +24,7 @@ class PaymentMethods(models.Model):
 # class Transaction(models.Model):
 #     pass
     
-class SaleIncome(models.Model):
+class  SaleIncome(models.Model):
     INCOME_FOR = (
         ("admin","admin"),
         ("vendor","vendor"),

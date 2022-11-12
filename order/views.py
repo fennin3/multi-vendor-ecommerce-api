@@ -279,10 +279,31 @@ class AnnualSalesTotal(APIView):
             "data":data
         }, status=status.HTTP_200_OK)
 
+class RevenueBasedonArea(APIView):
+    permission_classes = (IsVendor,)
+    queryset = SaleIncome.objects.filter(income_for="vendor", status="paid")
+    serializer_class = AnnualSerializer
+    
+
+    def get(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        sales = self.queryset.filter(created_at__date__year=serializer.data['year'])
+        total = sales.aggregate(total=Sum('amount'))
+
+        data = sales.values_list("country__name").annotate(total=Sum('amount'))
+
+        return Response({
+            'orders':sales.count(),
+            "annual_total": 0 if total['total'] == None else total['total'],
+            "data":data
+        }, status=status.HTTP_200_OK)
+
 
 class RevenueBasedonArea(APIView):
     permission_classes = (IsVendor,)
-    queryset = SaleIncome.objects.filter(income_for="vendor")
+    queryset = SaleIncome.objects.filter(income_for="vendor", status="paid")
     serializer_class = AnnualSerializer
     
 
@@ -291,13 +312,13 @@ class RevenueBasedonArea(APIView):
         serializer.is_valid(raise_exception=True)
 
         sales = self.queryset.filter(created_at__date__year=serializer.data['year'], user=request.user.uid)
-        total = sales.aaggregate(total=Sum('amount'))
+        total = sales.aggregate(total=Sum('amount'))
 
-        data = sales.values_list("country__name").annotate(total=Sum('amount'))
+        data = [{"country":country,"amount":amount} for country,amount in sales.values_list("country__name").annotate(total=Sum('amount'))]
 
         return Response({
             'orders':sales.count(),
-            "annual_total":total['total'],
+            "annual_total": 0 if total['total'] == None else total['total'],
             "data":data
         }, status=status.HTTP_200_OK)
 
@@ -336,6 +357,8 @@ class CreateListShippingAddressView(generics.ListCreateAPIView):
 
         return Response(self.serializer_class(address).data, status=status.HTTP_201_CREATED)
 
+# class MakeShippingAddressDefault
+
 class RetrieveUpdateDeleteShippingAddressView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsCustomer,)
     serializer_class = ShippingAddressCreateSerializer
@@ -358,7 +381,7 @@ class AddAddressToCart(APIView):
     permission_classes =(IsCustomer,)
     serializer_class = AddAddressToCartSerializer
 
-    def post(self, request):
+    def patch(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -379,6 +402,35 @@ class AddAddressToCart(APIView):
         return Response({
             "message":"Shipping address has been updated"
         }, status=status.HTTP_200_OK)
+
+class RemoveAddressToCart(APIView):
+    permission_classes =(IsCustomer,)
+    serializer_class = AddAddressToCartSerializer
+
+    def patch(self, request):
+        # serializer = self.serializer_class(data=request.data)
+        # serializer.is_valid(raise_exception=True)
+
+        # address = get_object_or_404(ShippingAddress,uid=serializer.data.get('address_uid',None))
+
+        order,created = Order.objects.get_or_create(user=request.user.customer,ordered=False)
+
+        order.shipping_address = None
+
+        order.recipient_name = ""
+        order.email = ""
+        order.phone = ""
+        order.country = None
+        order.address = ""
+
+        order.save()
+
+        return Response({
+            "message":"Shipping address has been removed"
+        }, status=status.HTTP_200_OK)
+
+
+
 
 
 

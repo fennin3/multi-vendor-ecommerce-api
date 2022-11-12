@@ -3,7 +3,7 @@ from django.urls import path
 from product.views import RetrieveFlashSale
 
 from .views import ConfirmAccount, CustomerLogin, CustomerProfileUpdate, RetrieveAllBanners, \
-RetrieveDealOfTheDay, WishListRetrieveDeleteViews, WishListViews,CreateCustomer, CustomerProfile
+RetrieveDealOfTheDay, WishListRetrieveDeleteViews, WishListViews,CreateCustomer, CustomerProfile, place_order
 
 from order.views import CreateListShippingAddressView, RetrieveUpdateDeleteShippingAddressView
 
@@ -18,6 +18,9 @@ urlpatterns = [
     path('deal/', RetrieveDealOfTheDay.as_view(), name='deal'),
     path('flashsales/', RetrieveFlashSale.as_view(), name="flash_sale"),
     path('banners/', RetrieveAllBanners.as_view(), name="banners"),
+
+
+    path('place-order/<uid>/', place_order, name="place_order"),
     
     path('wishlist/', WishListViews.as_view(), name="wishlist"),
     path('wishlist/<uid>/', WishListRetrieveDeleteViews.as_view(), name="wishlist_one"),

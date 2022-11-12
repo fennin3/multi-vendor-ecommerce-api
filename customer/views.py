@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from administrator.models import Banner, ShippingFeeZone, Testimonial
 from administrator.serializers import BannerSerializer2, ShippingFeeZoneSerializer
 from administrator.tasks import send_confirmation_mail, send_newletter_verify
+from order.models import Order
 from product.models import Category, DealOfTheDay, Product, SubCategory
 from product.serializers import CategorySerializer, DealOfTheDaySerializer, ProductSerializer
 from vendor.models import ConfirmationCode, Vendor
@@ -20,8 +21,8 @@ from .permissions import IsCustomer
 from .serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, SubscriberSerializer, TestimonialSerializer, UserLoginSerializer, ConfirmAccountSerializer, WishItemSerializer, WishItemSerializer2
 from django.contrib.auth import get_user_model
 from django.core.signing import Signer
-
-
+from rest_framework.decorators import api_view, permission_classes
+import requests, json
 
 User = get_user_model()
 
@@ -308,4 +309,45 @@ class ListShippingZonesView(generics.ListAPIView):
     #         queryset = queryset.filter(purchaser__username=username)
     #     return queryset
 
+
+@api_view(["POST"])
+@permission_classes([IsCustomer,])
+def place_order(request,uid):
+    # order = get_object_or_404(Order, uid=uid)
+    SECRET_KEY = "FLWSECK_TEST-e6ab465f2e33d3bfd33561a4a70716fa-X"
+
+    url = "https://api.flutterwave.com/v3/payments"
+    bearer_token = "Bearer " + SECRET_KEY
+
+    response = requests.post(url=url,
+        headers={
+            "Authorization": bearer_token
+        },
+        json={
+            "tx_ref": "hooli-tx-1920bbtytty",
+            "amount": "100",
+            "currency": "NGN",
+            "redirect_url": "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc",
+            "meta": {
+                "consumer_uid": 23,
+            },
+            "customer": {
+                "email": "user@gmail.com",
+                "phonenumber": "0541752049",
+                "name": "Yemi Desola"
+            },
+            "customizations": {
+                "title": "Wanneka Payments",
+                "logo": "http://www.piedpiper.com/app/themes/joystick-v27/images/logo.png"
+            }
+        }
+    )
+
+    if response.status_code == 200:
+        return Response(json.loads(response.text))
+    else:
+        return Response({
+            "status":"failed",
+            "message":"sorry something went wrong"
+        }, status=status.HTTP_400_BAD_REQUEST)
 

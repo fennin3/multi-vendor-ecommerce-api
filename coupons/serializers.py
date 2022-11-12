@@ -11,7 +11,7 @@ class CouponSerializer(ModelSerializer):
 
 
         extra_kwargs = {
-            "is_active":{"default":True}
+            "is_active":{"default":True},
         }
 
 class CouponUsedSerializer(ModelSerializer):

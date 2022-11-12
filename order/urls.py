@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import AddAddressToCart, AnnualSalesTotal, ClientRetriveOrder, DailySalesTotal, MonthlySalesTotal, UpdateOrderStatus,\
-    VendorArrivedOrder, VendorOrder,\
+from .views import AddAddressToCart, AnnualSalesTotal, ClientRetriveOrder, DailySalesTotal, MonthlySalesTotal, RemoveAddressToCart, UpdateOrderStatus,\
+    VendorArrivedOrder, VendorOrder, RevenueBasedonArea,\
      add_to_cart, remove_from_cart,set_item_quantity, substract_item_quantity, add_item_quantity
 
 urlpatterns = [
@@ -14,11 +14,13 @@ urlpatterns = [
 
     # To Be Documented
     path("add-address/", AddAddressToCart.as_view(), name="add_address"),
+    path("remove-address/", RemoveAddressToCart.as_view(), name="remove_address"),
 
     
     path('arrived-orders/', VendorArrivedOrder.as_view(),name="vendor_orders"),
     path('daily-total/', DailySalesTotal.as_view(),name="daily_total"),
     path('monthly-total/', MonthlySalesTotal.as_view(),name="month_total"),
     path('annual-total/', AnnualSalesTotal.as_view(),name="annual_total"),
+    path('area-revenue/', RevenueBasedonArea.as_view(),name="annual_total"),
     path('order-shipped/', UpdateOrderStatus.as_view(),name="vendor_orders"),
 ]

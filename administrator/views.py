@@ -29,10 +29,16 @@ CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSeri
 from django.db.models import Sum,Count
 from rest_framework.renderers import TemplateHTMLRenderer
 from django_filters import rest_framework as filters
+from django.http import HttpResponse
+from rest_framework.decorators import api_view, permission_classes
+from vendor.permissions import IsVendor
+from djqscsv import render_to_csv_response
+
+
 # from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from django.contrib.auth import logout
-
+# from .resources import ProductResource
 
 class ListandCreateAdmin(generics.ListCreateAPIView):
     permission_classes = (IsSuperuser,)
@@ -609,6 +615,18 @@ class DailyOrdersSummary(APIView):
             "today_sale":result['total']
         }, status=status.HTTP_200_OK)
 
+class DailyIncomeSummary(APIView):
+    permission_classes = (IsSuperuser,)
+    queryset = SaleIncome.objects.filter(income_for="admin", created_at__date=datetime.today(), status="paid")
+    
+    def get(self, request):
+        result = self.queryset.aggregate(total=Sum('amount'))
+
+        return Response({
+            "transactions":self.queryset.count(),
+            "income": 0 if result['total'] == None else result['total']
+        }, status=status.HTTP_200_OK)
+
 class MonthlyOrdersSummary(APIView):
     permission_classes = (IsSuperuser,)
     queryset = Order.objects.all()
@@ -622,13 +640,36 @@ class MonthlyOrdersSummary(APIView):
         queryset = self.queryset.filter(ordered=True, ordered_date__date__month=serializer.data['month'], ordered_date__date__year=serializer.data['year'])
         result = queryset.aggregate(total=Sum('paid_amount'))
 
-        data = queryset.values_list("ordered_date__date__day").annotate(total=Sum('paid_amount'))
+        data = queryset.values_list("ordered_date__date__day").annotate(total=Sum('amount'))
         print(data)
         data = [{item[0]:item[1]} for item in data]
 
         return Response({
             "orders":queryset.count(),
             "month_total":result['total'],
+            "data":data
+        }, status=status.HTTP_200_OK)
+
+class MonthlyIncomeSummary(APIView):
+    permission_classes = (IsSuperuser,)
+    queryset = SaleIncome.objects.filter(income_for="admin", status="paid")
+    serializer_class = MonthSerializer
+
+    def get(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        queryset = self.queryset.filter(created_at__date__month=serializer.data['month'], created_at__date__year=serializer.data['year'])
+        result = queryset.aggregate(total=Sum('amount'))
+
+        data = queryset.values_list("created_at__date__day").annotate(total=Sum('amount'))
+
+        data = [{item[0]:item[1]} for item in data]
+
+        return Response({
+            "transactions":queryset.count(),
+            "month_income":result['total'],
             "data":data
         }, status=status.HTTP_200_OK)
 
@@ -651,6 +692,29 @@ class AnnualOrdersSummary(APIView):
         return Response({
             'orders':queryset.count(),
             "annual_total":result['total'],
+            "data":data
+        }, status=status.HTTP_200_OK)
+
+
+class AnnualIncomeSummary(APIView):
+    permission_classes = (IsSuperuser,)
+    queryset = SaleIncome.objects.filter(income_for="admin", status="paid")
+    serializer_class = AnnualSerializer
+
+    def get(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        queryset = self.queryset.filter(created_at__date__year=serializer.data['year'])
+        result = queryset.aggregate(total=Sum('amount'))
+
+        data = queryset.values_list("created_at__date__month").annotate(total=Sum('amount'))
+        data = [{calendar.month_name[item[0]][:3]:item[1]} for item in data]
+
+        return Response({
+            'transactions':queryset.count(),
+            "annual_income":result['total'],
             "data":data
         }, status=status.HTTP_200_OK)
 
@@ -692,7 +756,7 @@ class CountsAnalytics(APIView):
 
 class RevenueBasedonArea(APIView):
     permission_classes = (IsSuperuser,)
-    queryset = SaleIncome.objects.filter(income_for="admin")
+    queryset = SaleIncome.objects.filter(income_for="admin", status="paid")
     serializer_class = AnnualSerializer
     
 
@@ -701,13 +765,13 @@ class RevenueBasedonArea(APIView):
         serializer.is_valid(raise_exception=True)
 
         sales = self.queryset.filter(created_at__date__year=serializer.data['year'])
-        total = sales.aaggregate(total=Sum('amount'))
+        total = sales.aggregate(total=Sum('amount'))
 
-        data = sales.values_list("country__name").annotate(total=Sum('amount'))
+        data = [{"country":country,"amount":amount} for country,amount in sales.values_list("country__name").annotate(total=Sum('amount'))]
 
         return Response({
             'orders':sales.count(),
-            "annual_total":total['total'],
+            "annual_total": 0 if total['total'] == None else total['total'],
             "data":data
         }, status=status.HTTP_200_OK)
 
@@ -1049,4 +1113,55 @@ class CountVisitor(generics.CreateAPIView):
     permission_classes = ()
     serializer_class = VisitorSerializer
 
+
+@api_view(["GET"])
+@permission_classes([IsSuperuser,])
+def export_product(request):
+    approved = request.query_params.get('approved',None)
+
+    if approved is not None:
+        qs = Product.objects.select_related("category").prefetch_related("sub_categories").filter(is_active=True,is_approved=approved)
+    else:
+        qs = Product.objects.select_related("category")\
+        .prefetch_related("sub_categories")\
+        .filter(is_active=True)\
+        .values("uid","name","sku","category","sub_categories","slug",
+        "stock","price", "discount_type","discounted_price","description","additional_info","thumbnail",
+        "colors","sizes","tags","featured","vendor","is_approved","is_active","rating","created_at","updated_at"
+        )
+    return render_to_csv_response(qs)
+
+
+@api_view(["GET"])
+@permission_classes([IsSuperuser,])
+def export_vendors(request):
+    qs = Vendor.objects.select_related('user').values(
+        "user__uid","user__email","user__first_name","user__last_name",
+        "user__is_confirmed","shop_name","slug","country__name","address","description","phone_number",
+        "pending_balance","balance","featured","closed","user__avatar","banner","created_at","updated_at"
+        )
+    return render_to_csv_response(qs)
+
+@api_view(["GET"])
+@permission_classes([IsSuperuser,])
+def export_customers(request):
+    qs = Customer.objects.select_related('user').values(
+        "user__uid","user__email","user__first_name","user__last_name",
+        "user__is_confirmed","user__avatar","country__name","city","address","phone_number",
+        "is_active","suspended","created_at","updated_at"
+        )
+    return render_to_csv_response(qs)
+
+
+# @api_view(["GET"])
+# @permission_classes([IsSuperuser,])
+# def export_vendors(request):
+#     qs = Vendor.objects.select_related('user').values(
+#         "user__uid","user__email","user__first_name","user__last_name",
+#         "user__is_confirmed","shop_name","slug","country__name","address","description","phone_number",
+#         "pending_balance","balance","featured","closed","user__avatar","banner","created_at","updated_at"
+#         )
+#     return render_to_csv_response(qs)
+
+    
 

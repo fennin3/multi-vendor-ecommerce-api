@@ -4,7 +4,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
-from administrator.views import CountVisitor, ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo
+from administrator.views import CountVisitor, ListCountries, GetSiteInfo, PrivacyPolicy, TermsNConditions,UpdateSiteInfo, export_product, export_vendors, export_customers
 from customer.views import ContactMessageView, ListShippingZonesView, ListTestimonials, SubscribeNewsLetter, VerifyNewsLetterEmail
 from product.views import AllCatgories, AllSubCatgories, CategoryProducts, CategorySubCategory, ListColors, ListSizes, RetrieveCategoryDetail, RetrieveSubCatgoryDetail, SubCategoryProducts
 from vendor.views import CustomUserDetail
@@ -33,6 +33,10 @@ urlpatterns = [
     path('orders/',include('order.urls')),
     path('blog/',include('blog.urls')),
     path('coupons/',include('coupons.urls')),
+
+    path('exports/products/', export_product, name="export_products"),
+    path('exports/vendors/', export_vendors, name="export_vendors"),
+    path('exports/customers/', export_customers, name="export_customers"),
 
     # General Info
     path('countries/', ListCountries.as_view(), name="countries"),
