@@ -4,6 +4,7 @@ from .models import CustomUser, DealOfTheDayRequest, Vendor, ConfirmationCode
 from .tasks import send_confirmation_mail
 
 from rest_framework import serializers, status
+from django.core.exceptions import ObjectDoesNotExist
 # from rest_framework_jwt.settings import api_settings
 
 
@@ -92,10 +93,18 @@ class VendorSerializer3(serializers.ModelSerializer):
 
 
 class VendorSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
+
+    email = serializers.EmailField(write_only=True, source="user__email")
+    first_name = serializers.CharField(write_only=True, source="user__first_name")
+    last_name = serializers.CharField(write_only=True, source="user__last_name")
+    password = serializers.CharField(write_only=True,source="user__password")
+    avatar = serializers.ImageField(required=False, allow_null=False,write_only=True, source="user__avatar")
+    user_type = serializers.CharField(default="", required=False, write_only=True, source="user__user_type")
+
     class Meta:
         model = Vendor
-        fields = ("user", "shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')
+        fields = ("user","email","first_name","last_name","password","avatar","user_type", "shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')
 
         extra_kwargs = {
             "closed": {"read_only": True},
@@ -105,8 +114,26 @@ class VendorSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        user_data = validated_data.pop("user")
+        user_data = {}
+        user_data['email'] = validated_data.pop("user__email")
+        user_data['first_name'] = validated_data.pop("user__first_name")
+        user_data['last_name'] = validated_data.pop("user__last_name")
+        user_data['password'] = validated_data.pop("user__password")
+        user_data['user_type'] = validated_data.pop("user__user_type")
         user_data.update({"user_type": "VENDOR"})
+
+        try:
+            user_data['avatar'] = validated_data.pop("user__avatar")
+        except:
+            pass
+
+        try:
+            CustomUser.objects.get(email=user_data['email'])
+            raise serializers.ValidationError({"message":"user with this email address already exists."})
+
+        except ObjectDoesNotExist:
+            pass
+
         user = CustomUser.objects.create_user(**user_data)
         user.active = False
         user.save()
