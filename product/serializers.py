@@ -1,11 +1,11 @@
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from administrator.models import Visitor
 
-from vendor.models import Vendor
+# from vendor.models import Vendor
 from vendor.serializers import UserSerializer, VendorSerializer
 
-from .models import Category, Color, DealOfTheDay, FlashSale, Product, Image, SubCategory, ProductVariation, Review, Size
+from .models import Category, Color, DealOfTheDay, FlashSale, FlashSaleRequest, Product, Image, SubCategory, ProductVariation, Review, Size
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -175,6 +175,31 @@ class VisitorSerializer(serializers.ModelSerializer):
         fields="__all__"        
 
 
+
+class FlashSaleRequestSerializer3(serializers.ModelSerializer):
+    product = ProductSerializer()
+    class Meta:
+        model = FlashSaleRequest
+        fields="__all__"
+
+
+
+class FlashSaleRequestSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = FlashSaleRequest
+        fields="__all__"
+
+        extra_kwargs = {
+            "is_approved":{"read_only":True}
+        }
+
+
+class AddFlashSaleSerializer(serializers.Serializer):
+    product = serializers.UUIDField(required=True)
+    # end_date = serializers.DateTimeField(required=True,format="%Y-%m-%d %H:%M:%S")
+    class Meta:
+        model=FlashSale
+        fields="__all__"
 
 
 

@@ -15,7 +15,6 @@ from .models import Administrator, Banner, SiteConfiguration, SiteAddress, Shipp
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-
 class AdminSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
@@ -234,22 +233,7 @@ class FlashSaleRequestSerializer(serializers.ModelSerializer):
         model = FlashSaleRequest
         fields="__all__"
 
-class FlashSaleRequestSerializer2(serializers.ModelSerializer):
-    class Meta:
-        model = FlashSaleRequest
-        fields="__all__"
 
-        extra_kwargs = {
-            "is_approved":{"read_only":True}
-        }
-
-
-class AddFlashSaleSerializer(serializers.Serializer):
-    product = serializers.UUIDField(required=True)
-    # end_date = serializers.DateTimeField(required=True,format="%Y-%m-%d %H:%M:%S")
-    class Meta:
-        model=FlashSale
-        fields="__all__"
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -268,6 +252,5 @@ class BannerSerializer2(serializers.ModelSerializer):
     extra_kwargs ={
         "is_active":{"default":True}
     }
-
 
 

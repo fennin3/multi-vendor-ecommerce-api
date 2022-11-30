@@ -8,12 +8,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from administrator.permissions import IsSuperuser
-from administrator.serializers import FlashSaleRequestSerializer2
 # from rest_framework_jwt.blacklist.models import BlacklistedToken
 
 # from administrator.permissions import IsSuperuser
 
 from product.models import FlashSaleRequest
+from product.serializers import FlashSaleRequestSerializer2
 from vendor.paginations import AdminVendorPagination, ClientPagination
 
 from .models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor

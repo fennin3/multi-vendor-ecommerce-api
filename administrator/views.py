@@ -14,7 +14,7 @@ from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
 from product.filters import CategoryFilter, SubCategoryFilter
 from product.models import Category, Color, DealOfTheDay, FlashSale, FlashSaleRequest, Product, Size, SubCategory
-from product.serializers import CategorySerializer, CategoryUpdateSerializer, ColorSerializer, DealOfTheDaySerializer, MainCategorySerializer, ProductSerializer, ProductSerializer2, SizeSerializer, SubCategorySerializer, VisitorSerializer
+from product.serializers import AddFlashSaleSerializer, CategorySerializer, CategoryUpdateSerializer, ColorSerializer, DealOfTheDaySerializer, FlashSaleRequestSerializer3, MainCategorySerializer, ProductSerializer, ProductSerializer2, SizeSerializer, SubCategorySerializer, VisitorSerializer
 from transactions.models import PaymentMethods, SaleIncome
 from transactions.serializers import PaymentMethodSerializer2
 from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
@@ -23,7 +23,7 @@ from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSeri
 from rest_framework.generics import ListAPIView
 from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, SocialMedia, Testimonial, Visitor
 from .permissions import IsSuperuser
-from .serializers import (AddFlashSaleSerializer, AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, BannerSerializer, CountrySerializer2,
+from .serializers import (AdminSerializer, AdminSerializer2, ApproveDealOfTheDay, BannerSerializer, CountrySerializer2,
 CountrySerializer, CountrySerializer3, DeclineDealOfTheDay, FlashSaleRequestSerializer, ShippingFeeZoneSerializer, SiteAddressSerializer, SiteAddressSerializer2, SiteAddressSerializer3, SiteConfigSerializer, SocialMediaSerializer,
  SuspendVendorSerializer, UpdateOrderStatusSerializer, UserLoginSerializer)
 from django.db.models import Sum,Count
@@ -955,7 +955,7 @@ class RetrieveFlashSaleRequest(generics.ListAPIView):
     permission_classes = (IsSuperuser,)
     queryset = FlashSaleRequest.objects.all().order_by('-created_at')
     pagination_class = AdminVendorPagination
-    serializer_class = FlashSaleRequestSerializer
+    serializer_class = FlashSaleRequestSerializer3
 
 
 class UpdateDeleteRetrieveFlashSaleRequest(generics.RetrieveUpdateDestroyAPIView):
@@ -964,6 +964,13 @@ class UpdateDeleteRetrieveFlashSaleRequest(generics.RetrieveUpdateDestroyAPIView
     pagination_class = AdminVendorPagination
     serializer_class = FlashSaleRequestSerializer
     lookup_field = "uid"
+
+    def get(self, request, uid):
+        sale_request = get_object_or_404(FlashSaleRequest, uid=uid)
+
+        serializer = FlashSaleRequestSerializer3(sale_request)
+
+        return Response(serializer.data)
 
 class ApproveFlashSaleRequest(APIView):
     permission_classes = (IsSuperuser,)
