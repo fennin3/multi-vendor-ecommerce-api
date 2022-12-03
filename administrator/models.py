@@ -9,6 +9,7 @@ class Administrator(models.Model):
     phone_number = models.CharField(
         _("phone number"), blank=False, null=False, max_length=16
     )
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

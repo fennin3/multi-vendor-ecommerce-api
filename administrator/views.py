@@ -9,7 +9,7 @@ from administrator.filters import OrderFilter, ProductFilter
 from administrator.tasks import send_deal_request_approval_mail, send_flashsale_approval_mail
 from administrator.utils import STATUS
 from customer.models import ContactMessage, Customer, NewsLetterSubscriber
-from customer.serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, SubscriberSerializer, TestimonialSerializer
+from customer.serializers import ContactMessageSerializer, CustomerSerializer, CustomerSerializer2, CustomerSerializer3, SubscriberSerializer, TestimonialSerializer
 from order.models import Order
 from order.serializers import AnnualSerializer, MonthSerializer, OrderSerializer
 from product.filters import CategoryFilter, SubCategoryFilter
@@ -19,7 +19,7 @@ from transactions.models import PaymentMethods, SaleIncome
 from transactions.serializers import PaymentMethodSerializer2
 from vendor.models import ConfirmationCode, CustomUser, DealOfTheDayRequest, Vendor
 from vendor.paginations import AdminVendorPagination
-from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSerializer, VendorSerializer
+from vendor.serializers import ConfirmAccountSerializer, DealOfTheDayRequestSerializer, VendorSerializer, VendorSerializer3
 from rest_framework.generics import ListAPIView
 from .models import Administrator, Banner, Country, ShippingFeeZone, SiteAddress, SiteConfiguration, SocialMedia, Testimonial, Visitor
 from .permissions import IsSuperuser
@@ -357,6 +357,23 @@ class VendorViewSet(ModelViewSet):
     permission_classes = (IsSuperuser,)
     lookup_field = 'user__uid'
     pagination_class = AdminVendorPagination
+
+    def destroy(self, request, user__uid):
+        user = get_object_or_404(CustomUser, uid=user__uid)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def partial_update(self, request, user__uid):
+        serializer = VendorSerializer3(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        vendor = get_object_or_404(Vendor, user__uid=user__uid)
+
+        vendor = serializer.update(vendor,serializer.validated_data)
+
+        return Response(self.serializer_class(vendor).data,status=status.HTTP_200_OK)
+
+    
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all().order_by('-created_at')
@@ -852,12 +869,13 @@ class CreateListShippingZonesView(ModelViewSet):
 class CustomerViewSet(ModelViewSet):
     permission_classes =(IsSuperuser,)
     serializer_class = CustomerSerializer
-    queryset = Customer.objects.all().order_by('-created_at')
+    queryset = Customer.objects.select_related("country","user").all().order_by('-created_at')
     pagination_class = AdminVendorPagination
     lookup_field = "user__uid"
 
 
     def partial_update(self, request, user__uid):
+        print(request.data)
         serializer = CustomerSerializer2(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -866,6 +884,26 @@ class CustomerViewSet(ModelViewSet):
         customer = serializer.update(customer,serializer.validated_data)
 
         return Response(self.serializer_class(customer).data,status=status.HTTP_200_OK)
+    
+    def retrieve(self, request,user__uid):
+        customer = get_object_or_404(Customer,user__uid=user__uid)
+        serializer = CustomerSerializer3(customer)
+        return Response(serializer.data)
+    
+    def list(self, request):
+        page = self.paginate_queryset(self.queryset)
+
+        if page is not None:
+            customers = CustomerSerializer3(self.queryset, many=True, context={"request":request})
+            return self.get_paginated_response(customers.data)
+        
+        customers = CustomerSerializer3(self.queryset, many=True, context={"request":request})
+        return Response(customers.data, status=status.HTTP_200_OK)
+    
+    def destroy(self, request, user__uid):
+        user = get_object_or_404(CustomUser, uid=user__uid)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SuspendUnsuspendCustomer(APIView):
@@ -1160,15 +1198,40 @@ def export_customers(request):
     return render_to_csv_response(qs)
 
 
-# @api_view(["GET"])
-# @permission_classes([IsSuperuser,])
-# def export_vendors(request):
-#     qs = Vendor.objects.select_related('user').values(
-#         "user__uid","user__email","user__first_name","user__last_name",
-#         "user__is_confirmed","shop_name","slug","country__name","address","description","phone_number",
-#         "pending_balance","balance","featured","closed","user__avatar","banner","created_at","updated_at"
-#         )
-#     return render_to_csv_response(qs)
 
-    
+class ProductsCategoriesCount(APIView):
+    permission_classes = (IsSuperuser,)
+
+    def get(self, request):
+        approved_products = Product.objects.values("uid", "is_approved").filter(is_approved=True).count()
+        unapproved_products = Product.objects.values("uid", "is_approved").filter(is_approved=False).count()
+        active_approved = Product.objects.values("is_active", "is_approved").filter(is_approved=True, is_active=True).count()
+        active_products = Product.objects.values("uid", "is_active").filter(is_active=True).count()
+        inactive_products = Product.objects.values("uid", "is_active").filter(is_active=False).count()
+
+        active_cat = Category.objects.values("uid", "is_active").filter(is_active=True).count()
+        inactive_cat = Category.objects.values("uid", "is_active").filter(is_active=False).count()
+
+        active_subcat = SubCategory.objects.values("uid", "is_active").filter(is_active=True).count()
+        inactive_subcat= SubCategory.objects.values("uid", "is_active").filter(is_active=False).count()
+
+        return Response({
+            "product":{
+                "approved_products":approved_products,
+                "unapproved_products":unapproved_products,
+                "active_products":active_products,
+                "inactive_products":inactive_products,
+                "active_and_approved":active_approved
+            },
+            "category":{
+                "active_categories":active_cat,
+                "inactive_categories":inactive_cat,
+            },
+            "subcategory":{
+                "active_subcategories":active_subcat,
+                "inactive_subcategories":inactive_subcat,
+            },
+        })
+            
+
 

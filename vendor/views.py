@@ -120,7 +120,7 @@ class VendorLogin(APIView):
 class VendorUpdate(UpdateAPIView):
     permission_classes = (IsVendor,)
     # authentication_class = JSONWebTokenAuthentication
-    queryset = Vendor.objects.all()
+    queryset = Vendor.objects.select_related("user").all()
     serializer_class = VendorSerializer3
     lookup_field = "user__uid"
 

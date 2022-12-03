@@ -79,17 +79,58 @@ class VendorSerializer2(serializers.ModelSerializer):
         lookup_field = 'user__uid'
 
 class VendorSerializer3(serializers.ModelSerializer):
-    # user = UserSerializer()
+    # user = UserSerializer(read_only=True)
+    email = serializers.EmailField(write_only=True, source="user__email", required=False)
+    first_name = serializers.CharField(write_only=True, source="user__first_name", required=False)
+    last_name = serializers.CharField(write_only=True, source="user__last_name", required=False)
+    # password = serializers.CharField(write_only=True,source="user__password", required=False)
+    avatar = serializers.ImageField(required=False, allow_null=False,write_only=True, source="user__avatar")
     class Meta:
         model = Vendor
-        fields = ("shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')
+        fields = ("email","first_name","last_name", "avatar","shop_name",'country','address', "description", "phone_number","pending_balance","balance", "closed", "suspended", 'banner')
 
         extra_kwargs = {
+            "country":{"required":False}, 
+            "address":{"required":False}, 
+            "description":{"required":False}, 
+            "phone_number":{"required":False}, 
             "closed": {"read_only": True},
             "suspended": {"read_only": True},
             "pending_balance": {"read_only": True},
             "balance": {"read_only": True},
+            "created_at":{"read_only":True},
+            "updated_at":{"read_only":True},
         }
+    
+    def update(self, instance, validated_data):
+        user = instance.user
+        user_data = {}
+        user_data['email'] = validated_data.get("user__email",user.email)
+        user_data['first_name'] = validated_data.get("user__first_name",user.first_name)
+        user_data['last_name'] = validated_data.get("user__last_name",user.last_name)
+        user_data['avatar'] = validated_data.get("user__avatar",None)
+
+        if user_data["avatar"] == None:
+            del user_data["avatar"]
+        else:
+            del validated_data["user__avatar"]
+        
+        try:
+            validated_data.pop("user__email")
+        except:
+            pass
+
+        try:
+            validated_data.pop("user__first_name")
+        except:
+            pass
+
+        try:
+            validated_data.pop("user__last_name")
+        except:
+            pass
+        user = CustomUser.objects.filter(uid=instance.user.uid).update(**user_data)
+        return super().update(instance, validated_data)
 
 
 class VendorSerializer(serializers.ModelSerializer):

@@ -8,7 +8,7 @@ from vendor.models import CustomUser
 
 class Customer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, related_name="customer")
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.DO_NOTHING)
     city = models.CharField(max_length=255)
     address = models.TextField(_("address"), null=True, blank=True)
     phone_number = models.CharField(_("phone number"), blank=False, null=False, max_length=16)

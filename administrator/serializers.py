@@ -30,6 +30,10 @@ class AdminSerializer(serializers.ModelSerializer):
         model = Administrator 
         fields = ("user","email","first_name","last_name","password","avatar","user_type","phone_number")
 
+        extra_kwargs = {
+            "is_active":{"read_only":True}
+        }
+
 
     def create(self, validated_data):
         user_data = {}
@@ -62,10 +66,52 @@ class AdminSerializer(serializers.ModelSerializer):
         return administrator
 
 class AdminSerializer2(serializers.ModelSerializer):
-    # user = UserSerializer()
+    user = UserSerializer(read_only=True)
+    email = serializers.EmailField(write_only=True, source="user__email", required=False)
+    first_name = serializers.CharField(write_only=True, source="user__first_name", required=False)
+    last_name = serializers.CharField(write_only=True, source="user__last_name", required=False)
+    # password = serializers.CharField(write_only=True,source="user__password", required=False)
+    avatar = serializers.ImageField(required=False, allow_null=False,write_only=True, source="user__avatar")
+    
     class Meta:
         model = Administrator 
-        fields = ("user","phone_number")
+        fields = ("user","email","first_name","last_name","avatar","phone_number")
+
+        extra_kwargs = {
+            "phone_number":{"required":False}, 
+        }
+
+    def update(self, instance, validated_data):
+        user = instance.user
+        user_data = {}
+        user_data['email'] = validated_data.get("user__email",user.email)
+        user_data['first_name'] = validated_data.get("user__first_name",user.first_name)
+        user_data['last_name'] = validated_data.get("user__last_name",user.last_name)
+        user_data['avatar'] = validated_data.get("user__avatar",None)
+
+        if user_data["avatar"] == None:
+            del user_data["avatar"]
+        else:
+            del validated_data["user__avatar"]
+        
+        try:
+            validated_data.pop("user__email")
+        except:
+            pass
+
+        try:
+            validated_data.pop("user__first_name")
+        except:
+            pass
+
+        try:
+            validated_data.pop("user__last_name")
+        except:
+            pass
+
+
+        user = CustomUser.objects.filter(uid=instance.user.uid).update(**user_data)
+        return super().update(instance, validated_data)
 
 class ConfirmAccountSerializer(serializers.Serializer):
     confirmation_code = serializers.IntegerField(required=True)

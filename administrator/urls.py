@@ -4,7 +4,7 @@ from rest_framework import routers
 from .views import (ActiveCustomer, ActiveInactiveBankDetail, AddSiteAddress, AdminProfile, AllOrders, AllSubscribers, AnnualIncomeSummary, AnnualOrdersSummary, ApproveDOTD, ApproveFlashSaleRequest,
  ApproveProduct,  BankDetailsView, BannerStatus, BannerViewSets, CategoryViewSet, ColorModelViewset, ConfirmAccount, CountryView, CountsAnalytics, 
  CreateListShippingZonesView, CustomerViewSet, DailyIncomeSummary, DailyOrdersSummary, 
- DisapproveProduct, ListAddress, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyIncomeSummary, MonthlyOrdersSummary, ProductViewSet, \
+ DisapproveProduct, ListAddress, ListContactMessages, ListandCreateAdmin, AdminLogin, MonthlyIncomeSummary, MonthlyOrdersSummary, ProductViewSet, ProductsCategoriesCount, \
  RetrieveCustomerOrder, RetrieveFlashSaleRequest, RetrieveRemoveUpdateDOTD, RetrieveUpdateDestroyAdminView, RevenueBasedonArea, SizeModelViewset, SocialMediaStatus, SocialMediaViewSet, SubCategoryViewSet, SuspendUnsuspendCustomer,\
      SuspendVendor, TestimonialViewSet, UpdateAddress, UpdateDeleteRetrieveFlashSaleRequest, UpdateFeatured, UpdateOrderStatus, VendorViewSet, VerifyUnverifyBankDetail)
 
@@ -90,7 +90,7 @@ urlpatterns = [
 
     path('orders/analytics/counts/', CountsAnalytics.as_view(), name="summary_counts"),
     
-
+    path('counts/analytics/', ProductsCategoriesCount.as_view(), name="summary_counts"),
     
     path('orders/analytics/area-revenue/', RevenueBasedonArea.as_view(), name="summary_counts"),
 
